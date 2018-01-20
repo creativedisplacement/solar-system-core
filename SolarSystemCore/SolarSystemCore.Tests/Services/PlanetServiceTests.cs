@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using SolarSystemCore.Models;
 using SolarSystemCore.Repositories;
 using SolarSystemCore.Services;
@@ -6,17 +7,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Xunit;
+using System.Threading.Tasks;
 
 namespace SolarSystemCore.Tests.Services
 {
+    [TestClass]
     public class PlanetServiceTests
     {
         public Mock<IRepository<Planet>> repository { get; set; }
         public List<Planet> planets { get; set; }
         public IPlanetService service { get; set; }
+        public Planet planet { get; set; }
 
-        public PlanetServiceTests()
+        [TestInitialize]
+        public void Setup()
         {
             planets = new List<Planet>
             {
@@ -30,47 +34,124 @@ namespace SolarSystemCore.Tests.Services
             repository.Setup(p => p.FirstOrDefaultAsync(It.IsAny<Expression<Func<Planet, bool>>>()))
                 .ReturnsAsync(planets.FirstOrDefault(p => p.Id == 1));
 
+            planet = new Planet
+            {
+                Id = 3,
+                CreatedDate = DateTime.Now,
+                LastUpdatedDate = DateTime.Now,
+                Name = "Planet 3",
+                StarId = 1
+
+            };
+
             service = new PlanetService(repository.Object);
         }
 
-        [Fact]
-        public async void GetAllPlanets_ReturnsExpectedPlanets()
+        [TestMethod]
+        public async Task GetAllPlanets_ReturnsExpectedNumberOfPlanets()
         {
-            Assert.Equal(2, (await service.GetAllPlanetsAsync()).Count());
+            Assert.AreEqual(2, (await service.GetAllPlanetsAsync()).Count());
         }
 
-        [Fact]
-        public async void GetAllPlanets_ReturnsNull()
+        [TestMethod]
+        public async Task GetAllPlanets_ReturnsUnexpectedNumberOfPlanets()
         {
-            throw new NotImplementedException();
+            Assert.AreNotEqual(3, (await service.GetAllPlanetsAsync()).Count());
         }
 
-        [Fact]
-        public async void GetPlanet_ReturnsExpectedPlanet()
+        [TestMethod]
+        public async Task GetPlanet_ReturnsExpectedPlanet()
         {
             var planet = await service.GetPlanetAsync(1);
-            Assert.IsType<Planet>(planet);
-            Assert.Equal("Planet 1", planet.Name);
+            Assert.IsInstanceOfType(planet, typeof(Planet));
+            Assert.AreEqual("Planet 1", planet.Name);
         }
 
-        [Fact]
-        public async void GetPlanet_ReturnsIncorrectPlanet()
+        [TestMethod]
+        public async Task GetPlanet_ReturnsIncorrectPlanet()
         {
             var planet = await service.GetPlanetAsync(1);
-            Assert.IsType<Planet>(planet);
-            Assert.NotEqual("Planet 2", planet.Name);
+            Assert.IsInstanceOfType(planet, typeof(Planet));
+            Assert.AreNotEqual("Planet 2", planet.Name);
         }
 
-        [Fact]
-        public async void FindPlanet_ReturnsExpectedPlanet()
+        [TestMethod]
+        public async Task FindPlanet_ReturnsExpectedPlanet()
         {
             throw new NotImplementedException();
         }
 
-        [Fact]
-        public async void AddPlanet_ReturnsTrue()
+        [TestMethod]
+        public async Task AddPlanet_ReturnsTrue()
+        {
+            var result = await service.AddPlanetAsync(planet);
+            repository.Verify(x => x.AddAsync(planet), Times.Once());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NullReferenceException))]
+        public async Task AddNullPlanet_ReturnsException()
+        {
+            var result = await service.AddPlanetAsync(new Planet());
+            repository.Verify(x => x.AddAsync(planet), Times.Never());
+        }
+
+        [TestMethod]
+        public async Task AddPlanetWithoutCreationDates_ReturnsFalse()
         {
             throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public async Task AddPlanets_ReturnsTrue()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public async Task AddNullPlanetList_ReturnsNullException()
+        {
+            //Assert.Throws<ArgumentException>(act);
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public async Task AddPlanetsWithoutCreationDates_ReturnsFalse()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public async Task SavePlanet_ReturnsTrue()
+        {
+            var planet = planets.FirstOrDefault(p => p.Id == 1);
+            var result = await service.SavePlanetAsync(planet);
+            repository.Verify(x => x.SaveAsync(planet), Times.Once());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NullReferenceException))]
+        public async Task SaveNullPlanet_ReturnsException()
+        {
+            var result = await service.SavePlanetAsync(null);
+            repository.Verify(x => x.SaveAsync(planet), Times.Never());
+        }
+
+        [TestMethod]
+        public async Task DeletePlanetWithValidId()
+        {
+            var planet = planets.FirstOrDefault(p => p.Id == 1);
+            var result = await service.DeletePlanetAsync(planet.Id);
+            repository.Verify(x => x.DeleteAsync(planet), Times.Once());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NullReferenceException))]
+        public async Task DeletePlanetWithInvalidId_ReturnsException()
+        {
+            var planet = planets.FirstOrDefault(p => p.Id == 88);
+            await service.DeletePlanetAsync(planet.Id);
+            repository.Verify(x => x.DeleteAsync(planet), Times.Never());
         }
     }
 }

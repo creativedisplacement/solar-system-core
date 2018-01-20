@@ -1,21 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolarSystemCore.Models", "SolarSystemCore.Models\SolarSystemCore.Models.csproj", "{5BF57B77-1598-4907-AC74-513EC19AD4E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SolarSystemCore.Models", "SolarSystemCore.Models\SolarSystemCore.Models.csproj", "{5BF57B77-1598-4907-AC74-513EC19AD4E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolarSystemCore.Repositories", "SolarSystemCore.Repositories\SolarSystemCore.Repositories.csproj", "{A417D362-3680-464F-9745-91547C7CED5B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SolarSystemCore.Repositories", "SolarSystemCore.Repositories\SolarSystemCore.Repositories.csproj", "{A417D362-3680-464F-9745-91547C7CED5B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolarSystemCore.Services", "SolarSystemCore.Services\SolarSystemCore.Services.csproj", "{3E1C44DD-5BC6-4E58-8FC5-C6B3742D0F19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SolarSystemCore.Services", "SolarSystemCore.Services\SolarSystemCore.Services.csproj", "{3E1C44DD-5BC6-4E58-8FC5-C6B3742D0F19}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolarSystemCore.Data", "SolarSystemCore.Data\SolarSystemCore.Data.csproj", "{47FCD9AA-428E-4C2A-B0F8-5B5A776E2285}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SolarSystemCore.Data", "SolarSystemCore.Data\SolarSystemCore.Data.csproj", "{47FCD9AA-428E-4C2A-B0F8-5B5A776E2285}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolarSystemCore.Core", "SolarSystemCore.Core\SolarSystemCore.Core.csproj", "{F1C3BCC5-8803-4C3E-B0D1-D682EA2B3648}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SolarSystemCore.Core", "SolarSystemCore.Core\SolarSystemCore.Core.csproj", "{F1C3BCC5-8803-4C3E-B0D1-D682EA2B3648}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolarSystemCore.Tests", "SolarSystemCore.Tests\SolarSystemCore.Tests.csproj", "{7081C1AD-911E-4BAC-9159-D850F8B3A0D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SolarSystemCore.WebApi", "SolarSystemCore.WebApi\SolarSystemCore.WebApi.csproj", "{5918D9A1-A4B3-4DDC-90BB-E66415D4666C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolarSystemCore.WebApi", "SolarSystemCore.WebApi\SolarSystemCore.WebApi.csproj", "{5918D9A1-A4B3-4DDC-90BB-E66415D4666C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolarSystemCore.Tests", "SolarSystemCore.Tests\SolarSystemCore.Tests.csproj", "{7DDE3820-5FFF-4A9B-9E31-2E985A86563D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,14 +43,14 @@ Global
 		{F1C3BCC5-8803-4C3E-B0D1-D682EA2B3648}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1C3BCC5-8803-4C3E-B0D1-D682EA2B3648}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1C3BCC5-8803-4C3E-B0D1-D682EA2B3648}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7081C1AD-911E-4BAC-9159-D850F8B3A0D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7081C1AD-911E-4BAC-9159-D850F8B3A0D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7081C1AD-911E-4BAC-9159-D850F8B3A0D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7081C1AD-911E-4BAC-9159-D850F8B3A0D1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5918D9A1-A4B3-4DDC-90BB-E66415D4666C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5918D9A1-A4B3-4DDC-90BB-E66415D4666C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5918D9A1-A4B3-4DDC-90BB-E66415D4666C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5918D9A1-A4B3-4DDC-90BB-E66415D4666C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DDE3820-5FFF-4A9B-9E31-2E985A86563D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DDE3820-5FFF-4A9B-9E31-2E985A86563D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DDE3820-5FFF-4A9B-9E31-2E985A86563D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DDE3820-5FFF-4A9B-9E31-2E985A86563D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

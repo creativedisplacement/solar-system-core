@@ -19,11 +19,25 @@ namespace SolarSystemCore.Services
 
         public async Task<IEnumerable<Planet>> FindPlanetsAsync(Expression<Func<Planet, bool>> where) => await planetRepository.FindAsync(where);
 
-        public async Task<int> AddPlanetAsync(Planet planet) => await planetRepository.AddAsync(planet);
+        public async Task<int> AddPlanetAsync(Planet planet)
+        {
+            if (!string.IsNullOrEmpty(planet.Name))
+            {
+                return await planetRepository.AddAsync(planet);
+            }
+            throw new NullReferenceException();
+        }
 
         public async Task<int> AddPlanetsAsync(IList<Planet> planets) => await planetRepository.AddRangeAsync(planets);
 
-        public async Task<int> SavePlanetAsync(Planet planet) => await planetRepository.SaveAsync(planet);
+        public async Task<int> SavePlanetAsync(Planet planet)
+        {
+            if (planet.Id != 0)
+            {
+                return await planetRepository.SaveAsync(planet);
+            }
+            throw new ArgumentException();
+        }
        
         public async Task<int> DeletePlanetAsync(int id)
         {
@@ -33,7 +47,7 @@ namespace SolarSystemCore.Services
             {
                 return await planetRepository.DeleteAsync(planet);
             }
-            return 0;
+            throw new ArgumentException();
         }  
     }
 }
