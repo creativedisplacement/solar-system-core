@@ -75,15 +75,15 @@ namespace SolarSystemCore.Repositories
             {
                 return await dataContext.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (DbUpdateConcurrencyException)
             {
                 throw;
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateException)
             {
                 throw;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
