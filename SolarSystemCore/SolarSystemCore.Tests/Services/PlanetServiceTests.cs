@@ -24,16 +24,10 @@ namespace SolarSystemCore.Tests.Services
         {
             planets = new List<Planet>
             {
-                new Planet { Id = 1, Name = "Planet 1", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 1 },
-                new Planet { Id = 2, Name = "Planet 2", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 2 },
+                new Planet { Id = 1, Name = "Planet 1", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 1, StarId = 1 },
+                new Planet { Id = 2, Name = "Planet 2", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 2, StarId = 2 },
             };
-            repository = new Mock<IRepository<Planet>>();
-            repository
-                .Setup(p => p.GetAllAsync())
-                .ReturnsAsync(planets);
-            repository.Setup(p => p.FirstOrDefaultAsync(It.IsAny<Expression<Func<Planet, bool>>>()))
-                .ReturnsAsync(planets.FirstOrDefault(p => p.Id == 1));
-
+           
             planet = new Planet
             {
                 Id = 3,
@@ -44,41 +38,108 @@ namespace SolarSystemCore.Tests.Services
 
             };
 
+            repository = new Mock<IRepository<Planet>>();
             service = new PlanetService(repository.Object);
         }
 
         [TestMethod]
         public async Task GetAllPlanets_ReturnsExpectedNumberOfPlanets()
         {
-            Assert.AreEqual(2, (await service.GetAllPlanetsAsync()).Count());
+            repository
+                .Setup(p => p.GetAllAsync())
+                .ReturnsAsync(planets);
+
+            var result = await service.GetAllPlanetsAsync();
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Count());
         }
 
         [TestMethod]
         public async Task GetAllPlanets_ReturnsUnexpectedNumberOfPlanets()
         {
+            repository
+                .Setup(p => p.GetAllAsync())
+                .ReturnsAsync(planets);
+
+            var result = await service.GetAllPlanetsAsync();
+            Assert.IsNotNull(result);
             Assert.AreNotEqual(3, (await service.GetAllPlanetsAsync()).Count());
+        }
+
+        [TestMethod]
+        public async Task GetAllPlanetsByStarId_ReturnsExpectedNumberOfPlanets()
+        {
+            repository
+               .Setup(p => p.FindAsync(It.IsAny<Expression<Func<Planet, bool>>>()))
+               .ReturnsAsync(planets.Where(p => p.StarId == 1));
+
+            var result = await service.GetAllPlanetsByStarIdAsync(1);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual(result.FirstOrDefault().Name, "Planet 1");
+        }
+
+        [TestMethod]
+        public async Task GetAllPlanetsByStarId_ReturnsUnexpectedPlanet()
+        {
+            repository
+                .Setup(p => p.FindAsync(It.IsAny<Expression<Func<Planet, bool>>>()))
+                .ReturnsAsync(planets.Where(p => p.StarId == 2));
+
+            var result = await service.GetAllPlanetsByStarIdAsync(2);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count());
+            Assert.AreNotEqual(result.FirstOrDefault().Name, "Planet 1");
         }
 
         [TestMethod]
         public async Task GetPlanet_ReturnsExpectedPlanet()
         {
-            var planet = await service.GetPlanetAsync(1);
+            repository
+                .Setup(p => p.FirstOrDefaultAsync(It.IsAny<Expression<Func<Planet, bool>>>()))
+                .ReturnsAsync(planet);
+
+            var result = await service.GetPlanetAsync(3);
             Assert.IsInstanceOfType(planet, typeof(Planet));
-            Assert.AreEqual("Planet 1", planet.Name);
+            Assert.AreEqual("Planet 3", planet.Name);
         }
 
         [TestMethod]
         public async Task GetPlanet_ReturnsIncorrectPlanet()
         {
-            var planet = await service.GetPlanetAsync(1);
+            repository
+              .Setup(p => p.FirstOrDefaultAsync(It.IsAny<Expression<Func<Planet, bool>>>()))
+              .ReturnsAsync(planet);
+
+            var result = await service.GetPlanetAsync(1);
             Assert.IsInstanceOfType(planet, typeof(Planet));
-            Assert.AreNotEqual("Planet 2", planet.Name);
+            Assert.AreNotEqual("Planet 1", planet.Name);
         }
 
         [TestMethod]
         public async Task FindPlanet_ReturnsExpectedPlanet()
         {
-            throw new NotImplementedException();
+            repository
+              .Setup(p => p.FindAsync(It.IsAny<Expression<Func<Planet, bool>>>()))
+              .ReturnsAsync(planets.Where(p => p.Id == 1));
+
+            var result = await service.FindPlanetsAsync(p => p.Id == 1);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual(result.FirstOrDefault().Name, "Planet 1");
+        }
+
+        [TestMethod]
+        public async Task FindPlanet_ReturnsUnexpectedPlanet()
+        {
+            repository
+               .Setup(p => p.FindAsync(It.IsAny<Expression<Func<Planet, bool>>>()))
+               .ReturnsAsync(planets.Where(p => p.Id == 1));
+
+            var result = await service.FindPlanetsAsync(p => p.Id == 1);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count());
+            Assert.AreNotEqual(result.FirstOrDefault().Name, "Planet 2");
         }
 
         [TestMethod]
@@ -97,34 +158,32 @@ namespace SolarSystemCore.Tests.Services
         }
 
         [TestMethod]
-        public async Task AddPlanetWithoutCreationDates_ReturnsFalse()
+        public async Task AddPlanetList_ReturnsTrue()
         {
-            throw new NotImplementedException();
+            var planets = new List<Planet> {
+                new Planet { Id = 3, Name = "Planet 3", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now},
+                new Planet { Id = 4, Name = "Planet 4", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now},
+            };
+            var result = await service.AddPlanetsAsync(planets);
+            repository.Verify(x => x.AddRangeAsync(planets), Times.Once());
         }
 
         [TestMethod]
-        public async Task AddPlanets_ReturnsTrue()
-        {
-            throw new NotImplementedException();
-        }
-
-        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
         public async Task AddNullPlanetList_ReturnsNullException()
         {
-            //Assert.Throws<ArgumentException>(act);
-            throw new NotImplementedException();
-        }
-
-        [TestMethod]
-        public async Task AddPlanetsWithoutCreationDates_ReturnsFalse()
-        {
-            throw new NotImplementedException();
+            var planets = new List<Planet>();
+            var result = await service.AddPlanetsAsync(planets);
+            repository.Verify(x => x.AddRangeAsync(planets), Times.Never());
         }
 
         [TestMethod]
         public async Task SavePlanet_ReturnsTrue()
         {
-            var planet = planets.FirstOrDefault(p => p.Id == 1);
+            repository
+             .Setup(p => p.FirstOrDefaultAsync(It.IsAny<Expression<Func<Planet, bool>>>()))
+             .ReturnsAsync(planet);
+
             var result = await service.SavePlanetAsync(planet);
             repository.Verify(x => x.SaveAsync(planet), Times.Once());
         }
@@ -140,17 +199,23 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task DeletePlanetWithValidId()
         {
-            var planet = planets.FirstOrDefault(p => p.Id == 1);
-            var result = await service.DeletePlanetAsync(planet.Id);
+            repository
+              .Setup(p => p.FirstOrDefaultAsync(It.IsAny<Expression<Func<Planet, bool>>>()))
+              .ReturnsAsync(planet);
+
+            var result = await service.DeletePlanetAsync(3);
             repository.Verify(x => x.DeleteAsync(planet), Times.Once());
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NullReferenceException))]
+        [ExpectedException(typeof(ArgumentException))]
         public async Task DeletePlanetWithInvalidId_ReturnsException()
         {
-            var planet = planets.FirstOrDefault(p => p.Id == 88);
-            await service.DeletePlanetAsync(planet.Id);
+            repository
+              .Setup(p => p.FirstOrDefaultAsync(It.IsAny<Expression<Func<Planet, bool>>>()))
+              .ReturnsAsync(new Planet());
+
+            await service.DeletePlanetAsync(88);
             repository.Verify(x => x.DeleteAsync(planet), Times.Never());
         }
     }
