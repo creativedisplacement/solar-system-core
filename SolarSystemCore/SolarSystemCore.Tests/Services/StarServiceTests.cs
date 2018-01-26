@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using SolarSystemCore.Data;
 using SolarSystemCore.Models;
 using SolarSystemCore.Repositories;
@@ -8,8 +7,6 @@ using SolarSystemCore.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SolarSystemCore.Tests.Services
