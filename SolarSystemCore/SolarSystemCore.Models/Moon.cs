@@ -10,7 +10,5 @@ namespace SolarSystemCore.Models
 
         [Required]
         public int PlanetId { get; set; }
-
-        public string Test { get; set; }
     }
 }
