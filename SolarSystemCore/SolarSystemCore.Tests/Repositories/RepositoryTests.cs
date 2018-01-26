@@ -127,7 +127,7 @@ namespace SolarSystemCore.Tests.Repositories
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
-        public async Task AddAsync_ReturnsNotExpectedResult()
+        public async Task AddAsync_ReturnsException()
         {
             var result = await repository.AddAsync(new Star());
         }
@@ -182,8 +182,6 @@ namespace SolarSystemCore.Tests.Repositories
         {
             var starToDelete = stars.SingleOrDefault(s => s.Id == 88);
             var result = await repository.DeleteAsync(starToDelete);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result);
         }
     }
 }
