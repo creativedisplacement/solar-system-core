@@ -14,10 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SolarSystemCore.Core\SolarSystemCore.Core.csproj" />
     <ProjectReference Include="..\SolarSystemCore.Data\SolarSystemCore.Data.csproj" />
     <ProjectReference Include="..\SolarSystemCore.Models\SolarSystemCore.Models.csproj" />
