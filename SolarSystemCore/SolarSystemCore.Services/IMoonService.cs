@@ -13,9 +13,9 @@ namespace SolarSystemCore.Services
         Task<Moon> GetMoonAsync(int id);
         Task<IEnumerable<Moon>> FindMoonsAsync(Expression<Func<Moon, bool>> where);
 
-        Task<int> AddMoonAsync(Moon moon);
-        Task<int> AddMoonsAsync(IList<Moon> moons);
-        Task<int> SaveMoonAsync(Moon moon);
-        Task<int> DeleteMoonAsync(int id);
+        Task<Moon> AddMoonAsync(Moon moon);
+        Task<IEnumerable<Moon>> AddMoonsAsync(IEnumerable<Moon> moons);
+        Task<Moon> SaveMoonAsync(Moon moon);
+        Task DeleteMoonAsync(int id);
     }
 }

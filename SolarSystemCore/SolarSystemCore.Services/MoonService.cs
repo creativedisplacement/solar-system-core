@@ -22,7 +22,7 @@ namespace SolarSystemCore.Services
 
         public async Task<IEnumerable<Moon>> FindMoonsAsync(Expression<Func<Moon, bool>> where) => await moonRepository.FindAsync(where);
 
-        public async Task<int> AddMoonAsync(Moon moon)
+        public async Task<Moon> AddMoonAsync(Moon moon)
         {
             if (!string.IsNullOrEmpty(moon.Name))
             {
@@ -31,7 +31,7 @@ namespace SolarSystemCore.Services
             throw new NullReferenceException();
         }
 
-        public async Task<int> AddMoonsAsync(IList<Moon> moons)
+        public async Task<IEnumerable<Moon>> AddMoonsAsync(IEnumerable<Moon> moons)
         {
             var moonsToAdd = moons.Where(p => p.Name != null || p.Name != string.Empty).ToList();
 
@@ -42,7 +42,7 @@ namespace SolarSystemCore.Services
             throw new ArgumentException();
         }
 
-        public async Task<int> SaveMoonAsync(Moon moon)
+        public async Task<Moon> SaveMoonAsync(Moon moon)
         {
             if (moon.Id != 0)
             {
@@ -51,13 +51,14 @@ namespace SolarSystemCore.Services
             throw new ArgumentException();
         }
 
-        public async Task<int> DeleteMoonAsync(int id)
+        public async Task DeleteMoonAsync(int id)
         {
             var moon = await GetMoonAsync(id);
 
             if (moon != null && moon.Id == id)
             {
-                return await moonRepository.DeleteAsync(moon);
+                await moonRepository.DeleteAsync(moon);
+                return;
             }
             throw new ArgumentException();
         }

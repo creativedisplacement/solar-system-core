@@ -15,9 +15,9 @@ namespace SolarSystemCore.Repositories
         Task<T> SingleOrDefaultAsync(Expression<Func<T, bool>> where);
         Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> where);
 
-        Task<int> AddAsync(T entity);
-        Task<int> AddRangeAsync(IList<T> entities);
-        Task<int> SaveAsync(T entity);
-        Task<int> DeleteAsync(T entity);
+        Task<T> AddAsync(T entity);
+        Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities);
+        Task<T> SaveAsync(T entity);
+        Task DeleteAsync(T entity);
     }
 }

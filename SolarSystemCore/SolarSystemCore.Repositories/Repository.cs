@@ -45,35 +45,44 @@ namespace SolarSystemCore.Repositories
             return await DbSet.FirstOrDefaultAsync(where);
         }
 
-        public Task<int> AddAsync(T entity)
+        public async Task<T> AddAsync(T entity)
         {
             DbSet.Add(entity);
-            return SaveChangesAsync();
+            await SaveChangesAsync();
+            return await SingleOrDefaultAsync(x => x.Id == entity.Id);
         }
 
-        public Task<int> AddRangeAsync(IList<T> entities)
+        public async Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities)
         {
             DbSet.AddRange(entities);
-            return SaveChangesAsync();
+            await SaveChangesAsync();
+            var savedEntities = new List<T>();
+
+            foreach (var entity in entities)
+            {
+                savedEntities.Add(await SingleOrDefaultAsync(x => x.Id == entity.Id));
+            }
+            return savedEntities;
         }
 
-        public Task<int> SaveAsync(T entity)
+        public async Task<T> SaveAsync(T entity)
         {
             dataContext.Entry(entity).State = EntityState.Modified;
-            return SaveChangesAsync();
+            await SaveChangesAsync();
+            return await SingleOrDefaultAsync(x => x.Id == entity.Id);
         }
 
-        public Task<int> DeleteAsync(T entity)
+        public async Task DeleteAsync(T entity)
         {
             dataContext.Entry(entity).State = EntityState.Deleted;
-            return SaveChangesAsync();
+            await SaveChangesAsync();
         }
 
-        internal async Task<int> SaveChangesAsync()
+        internal async Task SaveChangesAsync()
         {
             try
             {
-                return await dataContext.SaveChangesAsync();
+                await dataContext.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {

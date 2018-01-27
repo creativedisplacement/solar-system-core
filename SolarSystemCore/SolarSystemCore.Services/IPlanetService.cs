@@ -13,9 +13,9 @@ namespace SolarSystemCore.Services
         Task<Planet> GetPlanetAsync(int id);
         Task<IEnumerable<Planet>> FindPlanetsAsync(Expression<Func<Planet, bool>> where);
 
-        Task<int> AddPlanetAsync(Planet planet);
-        Task<int> AddPlanetsAsync(IList<Planet> planets);
-        Task<int> SavePlanetAsync(Planet planet);
-        Task<int> DeletePlanetAsync(int id);
+        Task<Planet> AddPlanetAsync(Planet planet);
+        Task<IEnumerable<Planet>> AddPlanetsAsync(IEnumerable<Planet> planets);
+        Task<Planet> SavePlanetAsync(Planet planet);
+        Task DeletePlanetAsync(int id);
     }
 }

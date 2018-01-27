@@ -12,9 +12,9 @@ namespace SolarSystemCore.Services
         Task<Star> GetStarAsync(int id);
         Task<IEnumerable<Star>> FindStarsAsync(Expression<Func<Star, bool>> where);
 
-        Task<int> AddStarAsync(Star star);
-        Task<int> AddStarsAsync(IList<Star> stars);
-        Task<int> SaveStarAsync(Star star);
-        Task<int> DeleteStarAsync(int id);
+        Task<Star> AddStarAsync(Star star);
+        Task<IEnumerable<Star>> AddStarsAsync(IEnumerable<Star> stars);
+        Task<Star> SaveStarAsync(Star star);
+        Task DeleteStarAsync(int id);
     }
 }

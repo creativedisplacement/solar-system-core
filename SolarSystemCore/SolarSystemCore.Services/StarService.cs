@@ -20,7 +20,7 @@ namespace SolarSystemCore.Services
 
         public async Task<IEnumerable<Star>> FindStarsAsync(Expression<Func<Star, bool>> where) => await starRepository.FindAsync(where);
 
-        public async Task<int> AddStarAsync(Star star)
+        public async Task<Star> AddStarAsync(Star star)
         {
             if (!string.IsNullOrEmpty(star.Name))
             {
@@ -29,7 +29,7 @@ namespace SolarSystemCore.Services
             throw new NullReferenceException();
         }
 
-        public async Task<int> AddStarsAsync(IList<Star> stars)
+        public async Task<IEnumerable<Star>> AddStarsAsync(IEnumerable<Star> stars)
         {
             var starsToAdd = stars.Where(p => p.Name != null || p.Name != string.Empty).ToList();
 
@@ -40,7 +40,7 @@ namespace SolarSystemCore.Services
             throw new ArgumentException();
         }
 
-        public async Task<int> SaveStarAsync(Star star)
+        public async Task<Star> SaveStarAsync(Star star)
         {
             if (star.Id != 0)
             {
@@ -49,13 +49,14 @@ namespace SolarSystemCore.Services
             throw new ArgumentException();
         }
 
-        public async Task<int> DeleteStarAsync(int id)
+        public async Task DeleteStarAsync(int id)
         {
             var star = await GetStarAsync(id);
 
             if (star != null && star.Id == id)
             {
-                return await starRepository.DeleteAsync(star);
+                await starRepository.DeleteAsync(star);
+                return;
             }
             throw new ArgumentException();
         }
