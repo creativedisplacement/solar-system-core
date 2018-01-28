@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SolarSystemCore.Core;
 using SolarSystemCore.Data;
 using SolarSystemCore.Models;
 using SolarSystemCore.Repositories;
@@ -58,7 +59,8 @@ namespace SolarSystemCore.Tests.Controllers
 
             var repository = new Repository<Star>(dbContext);
             var service = new StarService(repository);
-            controller = new StarController(service);
+            IAppSettings appSettings = new AppSettings();
+            controller = new StarController(service, appSettings);
         }
 
         [TestMethod]

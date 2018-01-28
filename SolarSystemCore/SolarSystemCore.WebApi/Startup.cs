@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SolarSystemCore.Core;
 using SolarSystemCore.Data;
 using SolarSystemCore.Repositories;
 using SolarSystemCore.Services;
@@ -33,6 +34,7 @@ namespace SolarSystemCore.WebApi
             services.AddScoped<IStarService, StarService>();
             services.AddScoped<IPlanetService, PlanetService>();
             services.AddScoped<IMoonService, MoonService>();
+            services.AddSingleton<IAppSettings>(Configuration.GetSection("AppSettings").Get<AppSettings>());
             services.AddMvc();
         }
 

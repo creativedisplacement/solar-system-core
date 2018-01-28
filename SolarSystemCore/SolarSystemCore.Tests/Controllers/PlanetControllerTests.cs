@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SolarSystemCore.Core;
 using SolarSystemCore.Data;
 using SolarSystemCore.Models;
 using SolarSystemCore.Repositories;
@@ -59,7 +60,8 @@ namespace SolarSystemCore.Tests.Controllers
 
             var repository = new Repository<Planet>(dbContext);
             var service = new PlanetService(repository);
-            controller = new PlanetController(service);
+            IAppSettings appSettings = new AppSettings();
+            controller = new PlanetController(service, appSettings);
         }
 
         [TestMethod]

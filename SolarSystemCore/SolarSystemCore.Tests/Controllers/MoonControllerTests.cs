@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SolarSystemCore.Core;
 using SolarSystemCore.Data;
 using SolarSystemCore.Models;
 using SolarSystemCore.Repositories;
@@ -59,7 +60,8 @@ namespace SolarSystemCore.Tests.Controllers
 
             var repository = new Repository<Moon>(dbContext);
             var service = new MoonService(repository);
-            controller = new MoonController(service);
+            IAppSettings appSettings = new AppSettings();
+            controller = new MoonController(service, appSettings);
         }
 
         [TestMethod]
