@@ -44,7 +44,7 @@ namespace SolarSystemCore.WebApi.Controllers
         [HttpPut("{id:int}")]
         public async Task<Moon> Put(int id, [FromBody]Moon moon) => await circuitBreaker.ExecuteAsync(async () => { return await moonService.SaveMoonAsync(moon); }); 
 
-        [HttpDelete("{id}")]
-        public async Task Delete(int id) => await moonService.DeleteMoonAsync(id);
+        [HttpDelete("{id:int}")]
+        public async Task Delete(int id) => await circuitBreaker.ExecuteAsync(async () => { await moonService.DeleteMoonAsync(id); }); 
     }
 }

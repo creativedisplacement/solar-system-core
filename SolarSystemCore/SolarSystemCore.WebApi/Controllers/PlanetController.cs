@@ -43,7 +43,7 @@ namespace SolarSystemCore.WebApi.Controllers
         [HttpPut("{id:int}")]
         public async Task<Planet> Put(int id, [FromBody]Planet planet) => await circuitBreaker.ExecuteAsync(async () => { return await planetService.SavePlanetAsync(planet); }); 
 
-        [HttpDelete("{id}")]
-        public async Task Delete(int id) => await planetService.DeletePlanetAsync(id);
+        [HttpDelete("{id:int}")]
+        public async Task Delete(int id) => await circuitBreaker.ExecuteAsync(async () => { await planetService.DeletePlanetAsync(id); }); 
     }
 }

@@ -146,6 +146,40 @@ namespace SolarSystemCore.WebApi.Helpers.CircuitBreaker
             return response;
         }
 
+        /// <summary>
+        /// Executes a specified Func within the confines of the Circuit Breaker Pattern (https://msdn.microsoft.com/en-us/library/dn589784.aspx)
+        /// </summary>
+        /// <param name="funcToIvoke"></param>
+        public async Task ExecuteAsync(Func<Task> funcToInvoke)
+        {
+            this.lastExecutionException = null;
+
+            state.ExecutionStart();
+            if (state is OpenState)
+            {
+                //Stop execution of this method
+                throw new Exception(System.Net.HttpStatusCode.ServiceUnavailable.ToString());
+            }
+
+            try
+            {
+                //do the work
+                await funcToInvoke();
+                //Access Without Cache
+            }
+            catch (Exception e)
+            {
+                lastExecutionException = e;
+                state.ExecutionFail(e);
+                //TODO:implement logging Elmah.ErrorSignal.FromCurrentContext().Raise(e);
+                throw;
+            }
+            finally
+            {
+                state.ExecutionComplete();
+            }
+        }
+
         #region State Management
         public bool IsClosed
         {
