@@ -39,8 +39,6 @@ namespace SolarSystemCore.Data.Migrations
 
                     b.Property<string>("SmallImage");
 
-                    b.Property<string>("Test");
-
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();

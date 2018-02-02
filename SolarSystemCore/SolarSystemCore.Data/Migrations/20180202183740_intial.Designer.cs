@@ -11,8 +11,8 @@ using System;
 namespace SolarSystemCore.Data.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20180117000832_initial")]
-    partial class initial
+    [Migration("20180202183740_intial")]
+    partial class intial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
