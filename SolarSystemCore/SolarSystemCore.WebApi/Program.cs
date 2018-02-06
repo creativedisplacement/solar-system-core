@@ -7,6 +7,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using StructureMap.AspNetCore;
 
 namespace SolarSystemCore.WebApi
 {
@@ -20,6 +21,7 @@ namespace SolarSystemCore.WebApi
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .UseStructureMap()
                 .Build();
     }
 }

@@ -14,6 +14,7 @@ using SolarSystemCore.Core;
 using SolarSystemCore.Data;
 using SolarSystemCore.Repositories;
 using SolarSystemCore.Services;
+using StructureMap;
 
 namespace SolarSystemCore.WebApi
 {
@@ -37,12 +38,28 @@ namespace SolarSystemCore.WebApi
         {
             services.AddDbContext<DBContext>(options => options.UseSqlServer(_configuration["Data:ConnectionString"]));
             services.AddSingleton<IConfiguration>(_configuration);
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped<IStarService, StarService>();
-            services.AddScoped<IPlanetService, PlanetService>();
-            services.AddScoped<IMoonService, MoonService>();
             services.AddSingleton<IAppSettings>(_configuration.GetSection("AppSettings").Get<AppSettings>());
             services.AddMvc();
+        }
+
+        // Use StructureMap-specific APIs to register services in the registry.
+        public void ConfigureContainer(Registry registry)
+        {
+            registry.Scan(register =>
+            {
+                register.Assembly("SolarSystemCore.Core");
+                register.Assembly("SolarSystemCore.Data");
+                register.Assembly("SolarSystemCore.Models");
+                register.Assembly("SolarSystemCore.Repositories");
+                register.Assembly("SolarSystemCore.Services");
+                register.Assembly("SolarSystemCore.WebApi");
+                register.WithDefaultConventions();
+
+                register.ConnectImplementationsToTypesClosing(typeof(IRepository<>)).OnAddedPluginTypes(c => c.ContainerScoped());
+            });
+
+            registry.For(typeof(IRepository<>)).Use(typeof(Repository<>));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
