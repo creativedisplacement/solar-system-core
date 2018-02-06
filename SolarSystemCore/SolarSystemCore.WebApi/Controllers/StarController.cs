@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using SolarSystemCore.Core;
 using SolarSystemCore.Models;
 using SolarSystemCore.Services;
@@ -13,13 +14,16 @@ namespace SolarSystemCore.WebApi.Controllers
     public class StarController : Controller
     {
         private readonly IStarService starService;
-        private static Helpers.CircuitBreaker.CircuitBreaker circuitBreaker;
         private readonly IAppSettings appSettings;
+        private readonly ILogger<StarController> logger;
 
-        public StarController(IStarService starService, IAppSettings appSettings)
+        private static Helpers.CircuitBreaker.CircuitBreaker circuitBreaker;
+       
+        public StarController(IStarService starService, IAppSettings appSettings, ILogger<StarController> logger)
         {
             this.starService = starService;
             this.appSettings = appSettings;
+            this.logger = logger;
             if (circuitBreaker == null)
             {
                 circuitBreaker = new Helpers.CircuitBreaker.CircuitBreaker("star_breaker", appSettings.FailureThreshold, TimeSpan.FromSeconds(appSettings.OpenCircuitTimeout));

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SolarSystemCore.Core;
 using SolarSystemCore.Data;
@@ -60,8 +61,9 @@ namespace SolarSystemCore.Tests.Controllers
 
             var repository = new Repository<Planet>(dbContext);
             var service = new PlanetService(repository);
+            var logger = new NullLogger<PlanetController>();
             IAppSettings appSettings = new AppSettings();
-            controller = new PlanetController(service, appSettings);
+            controller = new PlanetController(service, appSettings, logger);
         }
 
         [TestMethod]

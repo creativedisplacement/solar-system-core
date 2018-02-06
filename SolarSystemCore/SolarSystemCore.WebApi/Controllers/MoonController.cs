@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using SolarSystemCore.Core;
 using SolarSystemCore.Models;
 using SolarSystemCore.Services;
@@ -13,13 +14,15 @@ namespace SolarSystemCore.WebApi.Controllers
     public class MoonController : Controller
     {
         private readonly IMoonService moonService;
-        private static Helpers.CircuitBreaker.CircuitBreaker circuitBreaker;
         private readonly IAppSettings appSettings;
+        private readonly ILogger<MoonController> logger;
+        private static Helpers.CircuitBreaker.CircuitBreaker circuitBreaker;
 
-        public MoonController(IMoonService moonService, IAppSettings appSettings)
+        public MoonController(IMoonService moonService, IAppSettings appSettings, ILogger<MoonController> logger)
         {
             this.moonService = moonService;
             this.appSettings = appSettings;
+            this.logger = logger;
             if (circuitBreaker == null)
             {
                 circuitBreaker = new Helpers.CircuitBreaker.CircuitBreaker("moon_breaker", appSettings.FailureThreshold, TimeSpan.FromSeconds(appSettings.OpenCircuitTimeout));

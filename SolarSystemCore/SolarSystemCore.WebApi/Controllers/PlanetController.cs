@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using SolarSystemCore.Core;
 using SolarSystemCore.Models;
 using SolarSystemCore.Services;
@@ -13,13 +14,15 @@ namespace SolarSystemCore.WebApi.Controllers
     public class PlanetController : Controller
     {
         private readonly IPlanetService planetService;
-        private static Helpers.CircuitBreaker.CircuitBreaker circuitBreaker;
         private readonly IAppSettings appSettings;
+        private readonly ILogger<PlanetController> logger;
+        private static Helpers.CircuitBreaker.CircuitBreaker circuitBreaker;
 
-        public PlanetController(IPlanetService planetService, IAppSettings appSettings)
+        public PlanetController(IPlanetService planetService, IAppSettings appSettings, ILogger<PlanetController> logger)
         {
             this.planetService = planetService;
             this.appSettings = appSettings;
+            this.logger = logger;
             if (circuitBreaker == null)
             {
                 circuitBreaker = new Helpers.CircuitBreaker.CircuitBreaker("planet_breaker", appSettings.FailureThreshold, TimeSpan.FromSeconds(appSettings.OpenCircuitTimeout));

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SolarSystemCore.Core;
 using SolarSystemCore.Data;
@@ -60,8 +61,10 @@ namespace SolarSystemCore.Tests.Controllers
 
             var repository = new Repository<Moon>(dbContext);
             var service = new MoonService(repository);
+            var logger = new NullLogger<MoonController>();
+
             IAppSettings appSettings = new AppSettings();
-            controller = new MoonController(service, appSettings);
+            controller = new MoonController(service, appSettings, logger);
         }
 
         [TestMethod]

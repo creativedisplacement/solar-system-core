@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SolarSystemCore.Core;
 using SolarSystemCore.Data;
@@ -59,8 +60,9 @@ namespace SolarSystemCore.Tests.Controllers
 
             var repository = new Repository<Star>(dbContext);
             var service = new StarService(repository);
+            var logger = new NullLogger<StarController>();
             IAppSettings appSettings = new AppSettings();
-            controller = new StarController(service, appSettings);
+            controller = new StarController(service, appSettings, logger);
         }
 
         [TestMethod]
