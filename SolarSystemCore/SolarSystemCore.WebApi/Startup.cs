@@ -48,18 +48,12 @@ namespace SolarSystemCore.WebApi
             registry.Scan(register =>
             {
                 register.Assembly("SolarSystemCore.Core");
-                register.Assembly("SolarSystemCore.Data");
-                register.Assembly("SolarSystemCore.Models");
                 register.Assembly("SolarSystemCore.Repositories");
                 register.Assembly("SolarSystemCore.Services");
-                register.Assembly("SolarSystemCore.WebApi");
                 register.WithDefaultConventions();
-
+                register.AddAllTypesOf(typeof(IRepository<>));
                 register.ConnectImplementationsToTypesClosing(typeof(IRepository<>)).OnAddedPluginTypes(c => c.ContainerScoped());
             });
-
-            registry.For(typeof(IRepository<>)).Use(typeof(Repository<>));
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
