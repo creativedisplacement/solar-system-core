@@ -47,6 +47,11 @@ namespace SolarSystemCore.Repositories
 
         public async Task<T> AddAsync(T entity)
         {
+            if (entity.Id == default(Guid))
+            {
+                throw new ArgumentException();
+            }
+
             DbSet.Add(entity);
             await SaveChangesAsync();
             return await SingleOrDefaultAsync(x => x.Id == entity.Id);
@@ -54,6 +59,11 @@ namespace SolarSystemCore.Repositories
 
         public async Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities)
         {
+            if (entities.Any(e => e.Id == default(Guid)))
+            {
+                throw new ArgumentException();
+            }
+
             DbSet.AddRange(entities);
             await SaveChangesAsync();
             var savedEntities = new List<T>();
@@ -67,6 +77,10 @@ namespace SolarSystemCore.Repositories
 
         public async Task<T> SaveAsync(T entity)
         {
+            if (entity.Id == default(Guid))
+            {
+                throw new ArgumentException();
+            }
             dataContext.Entry(entity).State = EntityState.Modified;
             await SaveChangesAsync();
             return await SingleOrDefaultAsync(x => x.Id == entity.Id);
@@ -74,6 +88,10 @@ namespace SolarSystemCore.Repositories
 
         public async Task DeleteAsync(T entity)
         {
+            if (entity.Id == default(Guid))
+            {
+                throw new ArgumentException();
+            }
             dataContext.Entry(entity).State = EntityState.Deleted;
             await SaveChangesAsync();
         }

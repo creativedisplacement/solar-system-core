@@ -9,12 +9,12 @@ namespace SolarSystemCore.Services
     public interface IStarService
     {
         Task<IEnumerable<Star>> GetAllStarsAsync();
-        Task<Star> GetStarAsync(int id);
+        Task<Star> GetStarAsync(Guid id);
         Task<IEnumerable<Star>> FindStarsAsync(Expression<Func<Star, bool>> where);
 
         Task<Star> AddStarAsync(Star star);
         Task<IEnumerable<Star>> AddStarsAsync(IEnumerable<Star> stars);
         Task<Star> SaveStarAsync(Star star);
-        Task DeleteStarAsync(int id);
+        Task DeleteStarAsync(Guid id);
     }
 }

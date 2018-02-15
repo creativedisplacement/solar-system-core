@@ -16,9 +16,9 @@ namespace SolarSystemCore.Services
 
         public async Task<IEnumerable<Planet>> GetAllPlanetsAsync() => await planetRepository.GetAllAsync();
 
-        public async Task<IEnumerable<Planet>> GetAllPlanetsByStarIdAsync(int starId) => await planetRepository.FindAsync(p => p.StarId == starId);
+        public async Task<IEnumerable<Planet>> GetAllPlanetsByStarIdAsync(Guid starId) => await planetRepository.FindAsync(p => p.StarId == starId);
 
-        public async Task<Planet> GetPlanetAsync(int id) => await planetRepository.FirstOrDefaultAsync(p => p.Id == id);
+        public async Task<Planet> GetPlanetAsync(Guid id) => await planetRepository.FirstOrDefaultAsync(p => p.Id == id);
 
         public async Task<IEnumerable<Planet>> FindPlanetsAsync(Expression<Func<Planet, bool>> where) => await planetRepository.FindAsync(where);
 
@@ -44,14 +44,14 @@ namespace SolarSystemCore.Services
         
         public async Task<Planet> SavePlanetAsync(Planet planet)
         {
-            if (planet.Id != 0)
+            if (planet.Id != Guid.Empty)
             {
                 return await planetRepository.SaveAsync(planet);
             }
             throw new ArgumentException();
         }
        
-        public async Task DeletePlanetAsync(int id)
+        public async Task DeletePlanetAsync(Guid id)
         {
             var planet = await GetPlanetAsync(id);
 

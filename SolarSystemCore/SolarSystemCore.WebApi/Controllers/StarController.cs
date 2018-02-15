@@ -21,6 +21,9 @@ namespace SolarSystemCore.WebApi.Controllers
        
         public StarController(IStarService starService, IAppSettings appSettings, ILogger<StarController> logger)
         {
+            var x = Guid.NewGuid();
+            var y = Guid.Parse("DF9AA280-C912-4E42-A5B5-4573CF97FDB0");
+
             this.starService = starService;
             this.appSettings = appSettings;
             this.logger = logger;
@@ -33,8 +36,8 @@ namespace SolarSystemCore.WebApi.Controllers
         [HttpGet]
         public async Task<IEnumerable<Star>> Get() => await circuitBreaker.ExecuteAsync(async () => { return await starService.GetAllStarsAsync(); }); 
 
-        [HttpGet("{id:int}")]
-        public async Task<Star> Get(int id) => await circuitBreaker.ExecuteAsync(async () => { return await starService.GetStarAsync(id); }); 
+        [HttpGet("{id:guid}")]
+        public async Task<Star> Get(Guid id) => await circuitBreaker.ExecuteAsync(async () => { return await starService.GetStarAsync(id); }); 
 
         [HttpPost]
         public async Task<Star> Post([FromBody]Star star) => await circuitBreaker.ExecuteAsync(async () => { return await starService.AddStarAsync(star); }); 
@@ -42,10 +45,10 @@ namespace SolarSystemCore.WebApi.Controllers
         [HttpPost]
         public async Task<IEnumerable<Star>> Post([FromBody]IEnumerable<Star> stars) => await circuitBreaker.ExecuteAsync(async () => { return await starService.AddStarsAsync(stars); }); 
 
-        [HttpPut("{id:int}")]
-        public async Task<Star> Put(int id, [FromBody]Star star) => await circuitBreaker.ExecuteAsync(async () => { return await starService.SaveStarAsync(star); }); 
+        [HttpPut("{id:guid}")]
+        public async Task<Star> Put(Guid id, [FromBody]Star star) => await circuitBreaker.ExecuteAsync(async () => { return await starService.SaveStarAsync(star); }); 
 
-        [HttpDelete("{id:int}")]
-        public async Task Delete(int id) => await circuitBreaker.ExecuteAsync(async () => { await starService.DeleteStarAsync(id); }); 
+        [HttpDelete("{id:guid}")]
+        public async Task Delete(Guid id) => await circuitBreaker.ExecuteAsync(async () => { await starService.DeleteStarAsync(id); }); 
     }
 }

@@ -6,6 +6,7 @@ using SolarSystemCore.Data;
 using SolarSystemCore.Models;
 using SolarSystemCore.Repositories;
 using SolarSystemCore.Services;
+using SolarSystemCore.Tests.Helpers;
 using SolarSystemCore.WebApi.Controllers;
 using System;
 using System.Collections.Generic;
@@ -17,10 +18,10 @@ namespace SolarSystemCore.Tests.Controllers
     [TestClass]
     public class StarControllerTests
     {
-        public Star star { get; set; }
-        public IList<Star> stars { get; set; }
-        public IList<Star> starsToAdd { get; set; }
-        public StarController controller { get; set; }
+        private Star star { get; set; }
+        private IList<Star> stars { get; set; }
+        private IList<Star> starsToAdd { get; set; }
+        private StarController controller { get; set; }
 
         [TestInitialize]
         public void Setup()
@@ -31,25 +32,10 @@ namespace SolarSystemCore.Tests.Controllers
 
             var dbContext = new DBContext(options);
 
-            stars = new List<Star>
-            {
-                new Star { Id = 1, Name = "Star 1", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 1 },
-                new Star { Id = 2, Name = "Star 2", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 2 },
-            };
-
-            star = new Star
-            {
-                Id = 3,
-                CreatedDate = DateTime.Now,
-                LastUpdatedDate = DateTime.Now,
-                Name = "Star 3"
-            };
-
-            starsToAdd = new List<Star>
-            {
-                new Star { Id = 3, Name = "Star 3", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 1 },
-                new Star { Id = 4, Name = "Star 4", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 2 },
-            };
+            var testDataHelper = new TestHelper.StarData();
+            stars = testDataHelper.GetStars();
+            star = testDataHelper.GetStar();
+            starsToAdd = testDataHelper.GetStarsToAdd();
 
             foreach (var s in stars)
             {
@@ -84,7 +70,7 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_GetStar_ReturnsExpectedResult()
         {
-            var result = await controller.Get(1);
+            var result = await controller.Get(stars.FirstOrDefault().Id);
             Assert.IsNotNull(result);
             Assert.AreEqual("Star 1", result.Name);
         }
@@ -92,7 +78,7 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_GetStar_ReturnsUnexpectedResult()
         {
-            var result = await controller.Get(1);
+            var result = await controller.Get(stars.FirstOrDefault().Id);
             Assert.IsNotNull(result);
             Assert.AreNotEqual("Star 2", result.Name);
         }
@@ -132,7 +118,7 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_SaveStar_ReturnsExpectedResult()
         {
-            var starToSave = stars.SingleOrDefault(s => s.Id == 1);
+            var starToSave = stars.SingleOrDefault(s => s.Id == stars.FirstOrDefault().Id);
             starToSave.Name = "Star 1 Saved";
             var result = await controller.Put(starToSave.Id, starToSave);
             Assert.IsNotNull(result);
@@ -143,7 +129,7 @@ namespace SolarSystemCore.Tests.Controllers
         [ExpectedException(typeof(NullReferenceException))]
         public async Task Controller_SaveNullStar_ReturnsException()
         {
-            var starToSave = stars.SingleOrDefault(s => s.Id == 88);
+            var starToSave = stars.SingleOrDefault(s => s.Id == new Guid());
             starToSave.Name = "Star 1 Saved";
             var result = await controller.Put(starToSave.Id, starToSave);
         }
@@ -151,7 +137,7 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_DeleteStarWithValidId_ReturnsExpectedResult()
         {
-            var starToDelete = stars.SingleOrDefault(s => s.Id == 1);
+            var starToDelete = stars.SingleOrDefault(s => s.Id == stars.FirstOrDefault().Id);
             await controller.Delete(starToDelete.Id);
             Assert.IsNull(await controller.Get(starToDelete.Id));
         }
@@ -160,7 +146,7 @@ namespace SolarSystemCore.Tests.Controllers
         [ExpectedException(typeof(NullReferenceException))]
         public async Task Controller_DeleteStarWithInvalidId_ReturnsException()
         {
-            var starToDelete = stars.SingleOrDefault(s => s.Id == 88);
+            var starToDelete = stars.SingleOrDefault(s => s.Id == new Guid());
             await controller.Delete(starToDelete.Id);
         }
     }

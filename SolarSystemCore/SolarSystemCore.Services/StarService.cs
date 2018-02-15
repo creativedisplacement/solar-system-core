@@ -16,7 +16,7 @@ namespace SolarSystemCore.Services
 
         public async Task<IEnumerable<Star>> GetAllStarsAsync() => await starRepository.GetAllAsync();
 
-        public async Task<Star> GetStarAsync(int id) => await starRepository.FirstOrDefaultAsync(p => p.Id == id);
+        public async Task<Star> GetStarAsync(Guid id) => await starRepository.FirstOrDefaultAsync(p => p.Id == id);
 
         public async Task<IEnumerable<Star>> FindStarsAsync(Expression<Func<Star, bool>> where) => await starRepository.FindAsync(where);
 
@@ -42,14 +42,14 @@ namespace SolarSystemCore.Services
 
         public async Task<Star> SaveStarAsync(Star star)
         {
-            if (star.Id != 0)
+            if (star.Id != Guid.Empty)
             {
                 return await starRepository.SaveAsync(star);
             }
             throw new ArgumentException();
         }
 
-        public async Task DeleteStarAsync(int id)
+        public async Task DeleteStarAsync(Guid id)
         {
             var star = await GetStarAsync(id);
 

@@ -32,11 +32,11 @@ namespace SolarSystemCore.WebApi.Controllers
         [HttpGet]
         public async Task<IEnumerable<Moon>> Get() => await circuitBreaker.ExecuteAsync(async () => { return await moonService.GetAllMoonsAsync(); }); 
 
-        [HttpGet("{id:int}")]
-        public async Task<Moon> Get(int id) => await circuitBreaker.ExecuteAsync(async () => { return await moonService.GetMoonAsync(id); }); 
+        [HttpGet("{id:guid}")]
+        public async Task<Moon> Get(Guid id) => await circuitBreaker.ExecuteAsync(async () => { return await moonService.GetMoonAsync(id); }); 
 
-        [HttpGet("planet/{id:int}")]
-        public async Task<IEnumerable<Moon>> Get(int id, string star) => await circuitBreaker.ExecuteAsync(async () => { return await moonService.GetAllMoonsByPlanetIdAsync(id); }); 
+        [HttpGet("planet/{id:guid}")]
+        public async Task<IEnumerable<Moon>> Get(Guid id, string star) => await circuitBreaker.ExecuteAsync(async () => { return await moonService.GetAllMoonsByPlanetIdAsync(id); }); 
 
         [HttpPost]
         public async Task<Moon> Post([FromBody]Moon moon) => await circuitBreaker.ExecuteAsync(async () => { return await moonService.AddMoonAsync(moon); }); 
@@ -44,10 +44,10 @@ namespace SolarSystemCore.WebApi.Controllers
         [HttpPost]
         public async Task<IEnumerable<Moon>> Post([FromBody]IEnumerable<Moon> moons) => await circuitBreaker.ExecuteAsync(async () => { return await moonService.AddMoonsAsync(moons); }); 
 
-        [HttpPut("{id:int}")]
-        public async Task<Moon> Put(int id, [FromBody]Moon moon) => await circuitBreaker.ExecuteAsync(async () => { return await moonService.SaveMoonAsync(moon); }); 
+        [HttpPut("{id:guid}")]
+        public async Task<Moon> Put(Guid id, [FromBody]Moon moon) => await circuitBreaker.ExecuteAsync(async () => { return await moonService.SaveMoonAsync(moon); }); 
 
-        [HttpDelete("{id:int}")]
-        public async Task Delete(int id) => await circuitBreaker.ExecuteAsync(async () => { await moonService.DeleteMoonAsync(id); }); 
+        [HttpDelete("{id:guid}")]
+        public async Task Delete(Guid id) => await circuitBreaker.ExecuteAsync(async () => { await moonService.DeleteMoonAsync(id); }); 
     }
 }

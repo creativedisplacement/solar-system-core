@@ -18,8 +18,8 @@ namespace SolarSystemCore.Data
 
             var stars = new List<Star>
             {
-                new Star { Name = "Star 1", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 1},
-                new Star { Name = "Star 2", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 2},
+                new Star { Id = new Guid("DF9AA280-C912-4E42-A5B5-4573CF97FDB0"), Name = "Star 1", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 1},
+                new Star { Id = new Guid("591D922F-D11C-469F-B61B-AF783D71E60A"), Name = "Star 2", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 2},
             };
 
             foreach (var star in stars)
@@ -30,8 +30,8 @@ namespace SolarSystemCore.Data
 
             var planets = new List<Planet>
             {
-                new Planet { Name = "Planet 1", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 1, StarId = 1 },
-                new Planet { Name = "Planet 2", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 2, StarId = 2 },
+                new Planet {Id = new Guid("576B0C15-0010-4186-B45F-9E98B9E3F56B"), Name = "Planet 1", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 1, StarId = new Guid("DF9AA280-C912-4E42-A5B5-4573CF97FDB0") },
+                new Planet {Id = new Guid("9720021D-A5F7-4B52-A0C6-C89CC73830A7"), Name = "Planet 2", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 2, StarId = new Guid("591D922F-D11C-469F-B61B-AF783D71E60A") },
             };
 
             foreach (var planet in planets)
@@ -42,8 +42,8 @@ namespace SolarSystemCore.Data
 
             var moons = new List<Moon>
             {
-                new Moon { Name = "Moon 1", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 1, PlanetId = 1 },
-                new Moon { Name = "Moon 2", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 2, PlanetId = 1 },
+                new Moon {Id = new Guid("29E55F9D-D713-4237-BC2A-3BC5812ED2FD"), Name = "Moon 1", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 1, PlanetId = new Guid("576B0C15-0010-4186-B45F-9E98B9E3F56B") },
+                new Moon {Id = new Guid("B81A5D0F-988B-4EB2-AC2D-E64A3DF780AE"), Name = "Moon 2", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 2, PlanetId = new Guid("9720021D-A5F7-4B52-A0C6-C89CC73830A7") },
             };
 
             foreach (var moon in moons)

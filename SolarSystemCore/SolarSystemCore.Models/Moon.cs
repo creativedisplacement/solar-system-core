@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SolarSystemCore.Models
@@ -9,6 +10,6 @@ namespace SolarSystemCore.Models
         public virtual Planet Planet { get; set; }
 
         [Required]
-        public int PlanetId { get; set; }
+        public Guid PlanetId { get; set; }
     }
 }

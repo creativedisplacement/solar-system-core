@@ -16,9 +16,9 @@ namespace SolarSystemCore.Services
 
         public async Task<IEnumerable<Moon>> GetAllMoonsAsync() => await moonRepository.GetAllAsync();
 
-        public async Task<IEnumerable<Moon>> GetAllMoonsByPlanetIdAsync(int planetId) => await moonRepository.FindAsync(p => p.PlanetId == planetId);
+        public async Task<IEnumerable<Moon>> GetAllMoonsByPlanetIdAsync(Guid planetId) => await moonRepository.FindAsync(p => p.PlanetId == planetId);
 
-        public async Task<Moon> GetMoonAsync(int id) => await moonRepository.FirstOrDefaultAsync(p => p.Id == id);
+        public async Task<Moon> GetMoonAsync(Guid id) => await moonRepository.FirstOrDefaultAsync(p => p.Id == id);
 
         public async Task<IEnumerable<Moon>> FindMoonsAsync(Expression<Func<Moon, bool>> where) => await moonRepository.FindAsync(where);
 
@@ -44,14 +44,14 @@ namespace SolarSystemCore.Services
 
         public async Task<Moon> SaveMoonAsync(Moon moon)
         {
-            if (moon.Id != 0)
+            if (moon.Id != Guid.Empty)
             {
                 return await moonRepository.SaveAsync(moon);
             }
             throw new ArgumentException();
         }
 
-        public async Task DeleteMoonAsync(int id)
+        public async Task DeleteMoonAsync(Guid id)
         {
             var moon = await GetMoonAsync(id);
 

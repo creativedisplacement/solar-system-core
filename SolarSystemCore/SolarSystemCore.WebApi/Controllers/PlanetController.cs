@@ -31,11 +31,11 @@ namespace SolarSystemCore.WebApi.Controllers
         [HttpGet]
         public async Task<IEnumerable<Planet>> Get() => await circuitBreaker.ExecuteAsync(async () => { return await planetService.GetAllPlanetsAsync(); });
 
-        [HttpGet("{id:int}")]
-        public async Task<Planet> Get(int id) => await circuitBreaker.ExecuteAsync(async () => { return await planetService.GetPlanetAsync(id); }); 
+        [HttpGet("{id:guid}")]
+        public async Task<Planet> Get(Guid id) => await circuitBreaker.ExecuteAsync(async () => { return await planetService.GetPlanetAsync(id); }); 
 
-        [HttpGet("star/{id:int}")]
-        public async Task<IEnumerable<Planet>> Get(int id, string star) => await  circuitBreaker.ExecuteAsync(async () => { return await planetService.GetAllPlanetsByStarIdAsync(id); }); 
+        [HttpGet("star/{id:guid}")]
+        public async Task<IEnumerable<Planet>> Get(Guid id, string star) => await  circuitBreaker.ExecuteAsync(async () => { return await planetService.GetAllPlanetsByStarIdAsync(id); }); 
 
         [HttpPost]
         public async Task<Planet> Post([FromBody]Planet planet) => await circuitBreaker.ExecuteAsync(async () => { return await planetService.AddPlanetAsync(planet); }); 
@@ -43,10 +43,10 @@ namespace SolarSystemCore.WebApi.Controllers
         [HttpPost]
         public async Task<IEnumerable<Planet>> Post([FromBody]IEnumerable<Planet> planets) => await circuitBreaker.ExecuteAsync(async () => { return await planetService.AddPlanetsAsync(planets); }); 
 
-        [HttpPut("{id:int}")]
-        public async Task<Planet> Put(int id, [FromBody]Planet planet) => await circuitBreaker.ExecuteAsync(async () => { return await planetService.SavePlanetAsync(planet); }); 
+        [HttpPut("{id:guid}")]
+        public async Task<Planet> Put(Guid id, [FromBody]Planet planet) => await circuitBreaker.ExecuteAsync(async () => { return await planetService.SavePlanetAsync(planet); }); 
 
-        [HttpDelete("{id:int}")]
-        public async Task Delete(int id) => await circuitBreaker.ExecuteAsync(async () => { await planetService.DeletePlanetAsync(id); }); 
+        [HttpDelete("{id:guid}")]
+        public async Task Delete(Guid id) => await circuitBreaker.ExecuteAsync(async () => { await planetService.DeletePlanetAsync(id); }); 
     }
 }

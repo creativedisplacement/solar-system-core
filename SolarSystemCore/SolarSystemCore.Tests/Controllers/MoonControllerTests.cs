@@ -6,6 +6,7 @@ using SolarSystemCore.Data;
 using SolarSystemCore.Models;
 using SolarSystemCore.Repositories;
 using SolarSystemCore.Services;
+using SolarSystemCore.Tests.Helpers;
 using SolarSystemCore.WebApi.Controllers;
 using System;
 using System.Collections.Generic;
@@ -17,10 +18,10 @@ namespace SolarSystemCore.Tests.Controllers
     [TestClass]
     public class MoonControllerTests
     {
-        public Moon moon { get; set; }
-        public IList<Moon> moons { get; set; }
-        public IList<Moon> moonsToAdd { get; set; }
-        public MoonController controller { get; set; }
+        private Moon moon { get; set; }
+        private IList<Moon> moons { get; set; }
+        private IList<Moon> moonsToAdd { get; set; }
+        private MoonController controller { get; set; }
 
         [TestInitialize]
         public void Setup()
@@ -31,26 +32,10 @@ namespace SolarSystemCore.Tests.Controllers
 
             var dbContext = new DBContext(options);
 
-            moons = new List<Moon>
-            {
-                new Moon { Id = 1, Name = "Moon 1", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 1, PlanetId = 1 },
-                new Moon { Id = 2, Name = "Moon 2", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 2, PlanetId = 2 },
-            };
-
-            moon = new Moon
-            {
-                Id = 3,
-                CreatedDate = DateTime.Now,
-                LastUpdatedDate = DateTime.Now,
-                Name = "Moon 3",
-                PlanetId = 1
-            };
-
-            moonsToAdd = new List<Moon>
-            {
-                new Moon { Id = 3, Name = "Moon 3", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 1, PlanetId = 1 },
-                new Moon { Id = 4, Name = "Moon 4", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 2, PlanetId = 2 },
-            };
+            var testDataHelper = new TestHelper.MoonData();
+            moons = testDataHelper.GetMoons();
+            moon = testDataHelper.GetMoon();
+            moonsToAdd = testDataHelper.GetMoonsToAdd();
 
             foreach (var m in moons)
             {
@@ -86,7 +71,7 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_GetMoon_ReturnsExpectedResult()
         {
-            var result = await controller.Get(1);
+            var result = await controller.Get(moons.FirstOrDefault().Id);
             Assert.IsNotNull(result);
             Assert.AreEqual("Moon 1", result.Name);
         }
@@ -94,7 +79,7 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_GetMoon_ReturnsUnexpectedResult()
         {
-            var result = await controller.Get(1);
+            var result = await controller.Get(moons.FirstOrDefault().Id);
             Assert.IsNotNull(result);
             Assert.AreNotEqual("Moon 2", result.Name);
         }
@@ -102,7 +87,7 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_GetAllMoonsByStarId_ReturnsExpectedNumberOfMoons()
         {
-            var result = await controller.Get(2, "planet");
+            var result = await controller.Get(moons.Skip(1).Take(1).FirstOrDefault().PlanetId, "planet");
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual(result.FirstOrDefault().Name, "Moon 2");
@@ -111,7 +96,7 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_GetAllMoonsByStarId_ReturnsUnexpectedMoon()
         {
-            var result = await controller.Get(2, "planet");
+            var result = await controller.Get(moons.Skip(1).Take(1).FirstOrDefault().PlanetId, "planet");
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());
             Assert.AreNotEqual(result.FirstOrDefault().Name, "Moon 1");
@@ -152,7 +137,7 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_SaveMoon_ReturnsExpectedResult()
         {
-            var moonToSave = moons.SingleOrDefault(s => s.Id == 1);
+            var moonToSave = moons.SingleOrDefault(s => s.Id == moons.FirstOrDefault().Id);
             moonToSave.Name = "Moon 1 Saved";
             var result = await controller.Put(moonToSave.Id, moonToSave);
             Assert.IsNotNull(result);
@@ -163,7 +148,7 @@ namespace SolarSystemCore.Tests.Controllers
         [ExpectedException(typeof(NullReferenceException))]
         public async Task Controller_SaveNullMoon_ReturnsException()
         {
-            var moonToSave = moons.SingleOrDefault(s => s.Id == 88);
+            var moonToSave = moons.SingleOrDefault(s => s.Id == new Guid());
             moonToSave.Name = "Moon 1 Saved";
             var result = await controller.Put(moonToSave.Id, moonToSave);
         }
@@ -171,7 +156,7 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_DeleteMoonWithValidId_ReturnsExpectedResult()
         {
-            var moonToDelete = moons.SingleOrDefault(s => s.Id == 1);
+            var moonToDelete = moons.SingleOrDefault(s => s.Id == moons.FirstOrDefault().Id);
             await controller.Delete(moonToDelete.Id);
             Assert.IsNull(await controller.Get(moonToDelete.Id));
         }
@@ -180,7 +165,7 @@ namespace SolarSystemCore.Tests.Controllers
         [ExpectedException(typeof(NullReferenceException))]
         public async Task Controller_DeleteMoonWithInvalidId_ReturnsException()
         {
-            var moonToDelete = moons.SingleOrDefault(s => s.Id == 88);
+            var moonToDelete = moons.SingleOrDefault(s => s.Id == new Guid());
             await controller.Delete(moonToDelete.Id);
         }
     }
