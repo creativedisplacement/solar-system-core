@@ -18,10 +18,10 @@ namespace SolarSystemCore.Tests.Controllers
     [TestClass]
     public class PlanetControllerTests
     {
-        public Planet planet { get; set; }
-        public IList<Planet> planets { get; set; }
-        public IList<Planet> planetsToAdd { get; set; }
-        public PlanetController controller { get; set; } 
+        private Planet _planet;
+        private List<Planet> _planets;
+        private List<Planet> _planetsToAdd;
+        private PlanetController _controller; 
 
         [TestInitialize]
         public void Setup()
@@ -33,11 +33,11 @@ namespace SolarSystemCore.Tests.Controllers
             var dbContext = new DBContext(options);
 
             var testDataHelper = new TestHelper.PlanetData();
-            planets = testDataHelper.GetPlanets();
-            planet = testDataHelper.GetPlanet();
-            planetsToAdd = testDataHelper.GetPlanetsToAdd();
+            _planets = testDataHelper.GetPlanets();
+            _planet = testDataHelper.GetPlanet();
+            _planetsToAdd = testDataHelper.GetPlanetsToAdd();
 
-            foreach (var p in planets)
+            foreach (var p in _planets)
             {
                 dbContext.Planets.Add(p);
             }
@@ -45,16 +45,18 @@ namespace SolarSystemCore.Tests.Controllers
             dbContext.SaveChanges();
 
             var repository = new Repository<Planet>(dbContext);
-            var service = new PlanetService(repository);
+            var planetRepository = new PlanetRepository(repository);
+            var service = new PlanetService(planetRepository);
             var logger = new NullLogger<PlanetController>();
+
             IAppSettings appSettings = new AppSettings();
-            controller = new PlanetController(service, appSettings, logger);
+            _controller = new PlanetController(service, appSettings, logger);
         }
 
         [TestMethod]
         public async Task Controller_GetAllPlanets_ReturnsExpectedNumberOfPlanets()
         {
-            var result = await controller.Get();
+            var result = await _controller.Get();
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Count());
         }
@@ -62,7 +64,7 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_GetAllPlanets_ReturnsUnexpectedNumberOfPlanets()
         {
-            var result = await controller.Get();
+            var result = await _controller.Get();
             Assert.IsNotNull(result);
             Assert.AreNotEqual(3, result.Count());
         }
@@ -70,7 +72,7 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_GetPlanet_ReturnsExpectedResult()
         {
-            var result = await controller.Get(planets.FirstOrDefault().Id);
+            var result = await _controller.Get(_planets.FirstOrDefault().Id);
             Assert.IsNotNull(result);
             Assert.AreEqual("Planet 1", result.Name);
         }
@@ -78,7 +80,7 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_GetPlanet_ReturnsUnexpectedResult()
         {
-            var result = await controller.Get(planets.FirstOrDefault().Id);
+            var result = await _controller.Get(_planets.FirstOrDefault().Id);
             Assert.IsNotNull(result);
             Assert.AreNotEqual("Planet 2", result.Name);
         }
@@ -86,7 +88,7 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_GetAllPlanetsByStarId_ReturnsExpectedNumberOfPlanets()
         {
-            var result = await controller.Get(planets.Skip(1).Take(1).FirstOrDefault().StarId, "star");
+            var result = await _controller.Get(_planets.Skip(1).Take(1).FirstOrDefault().StarId, "star");
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual(result.FirstOrDefault().Name, "Planet 2");
@@ -95,7 +97,7 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_GetAllPlanetsByStarId_ReturnsUnexpectedPlanet()
         {
-            var result = await controller.Get(planets.Skip(1).Take(1).FirstOrDefault().StarId, "star");
+            var result = await _controller.Get(_planets.Skip(1).Take(1).FirstOrDefault().StarId, "star");
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());
             Assert.AreNotEqual(result.FirstOrDefault().Name, "Planet 1");
@@ -104,41 +106,41 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_AddPlanet_ReturnsExpectedResult()
         {
-            var result = await controller.Post(planet);
+            var result = await _controller.Post(_planet);
             Assert.IsNotNull(result);
-            Assert.AreEqual(result.Name, planet.Name);
+            Assert.AreEqual(result.Name, _planet.Name);
         }
 
         [TestMethod]
         [ExpectedException(typeof(NullReferenceException))]
         public async Task Controller_AddNullPlanet_ReturnsException()
         {
-            var result = await controller.Post(new Planet());
+            var result = await _controller.Post(new Planet());
         }
 
         [TestMethod]
         public async Task Controller_AddPlanetList_ReturnsExpectedResult()
         {
-            var result = await controller.Post(planetsToAdd);
+            var result = await _controller.Post(_planetsToAdd);
             Assert.IsNotNull(result);
-            Assert.AreEqual(result.Count(), planetsToAdd.Count());
-            Assert.AreEqual(result.FirstOrDefault().Name, planetsToAdd.FirstOrDefault().Name);
-            Assert.AreEqual(result.Skip(1).Take(1).FirstOrDefault().Name, planetsToAdd.Skip(1).Take(1).FirstOrDefault().Name);
+            Assert.AreEqual(result.Count(), _planetsToAdd.Count());
+            Assert.AreEqual(result.FirstOrDefault().Name, _planetsToAdd.FirstOrDefault().Name);
+            Assert.AreEqual(result.Skip(1).Take(1).FirstOrDefault().Name, _planetsToAdd.Skip(1).Take(1).FirstOrDefault().Name);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public async Task Controller_AddNullPlanetList_ReturnsException()
         {
-            var result = await controller.Post(new List<Planet>());
+            var result = await _controller.Post(new List<Planet>());
         }
 
         [TestMethod]
         public async Task Controller_SavePlanet_ReturnsExpectedResult()
         {
-            var planetToSave = planets.SingleOrDefault(s => s.Id == planets.FirstOrDefault().Id);
+            var planetToSave = _planets.SingleOrDefault(s => s.Id == _planets.FirstOrDefault().Id);
             planetToSave.Name = "Planet 1 Saved";
-            var result = await controller.Put(planetToSave.Id, planetToSave);
+            var result = await _controller.Put(planetToSave.Id, planetToSave);
             Assert.IsNotNull(result);
             Assert.AreEqual(result.Name, planetToSave.Name);
         }
@@ -147,25 +149,25 @@ namespace SolarSystemCore.Tests.Controllers
         [ExpectedException(typeof(NullReferenceException))]
         public async Task Controller_SaveNullPlanet_ReturnsException()
         {
-            var planetToSave = planets.SingleOrDefault(s => s.Id == new Guid());
+            var planetToSave = _planets.SingleOrDefault(s => s.Id == new Guid());
             planetToSave.Name = "Planet 1 Saved";
-            var result = await controller.Put(planetToSave.Id,planetToSave);
+            var result = await _controller.Put(planetToSave.Id,planetToSave);
         }
 
         [TestMethod]
         public async Task Controller_DeletePlanetWithValidId_ReturnsExpectedResult()
         {
-            var planetToDelete = planets.SingleOrDefault(s => s.Id == planets.FirstOrDefault().Id);
-            await controller.Delete(planetToDelete.Id);
-            Assert.IsNull(await controller.Get(planetToDelete.Id));
+            var planetToDelete = _planets.SingleOrDefault(s => s.Id == _planets.FirstOrDefault().Id);
+            await _controller.Delete(planetToDelete.Id);
+            Assert.IsNull(await _controller.Get(planetToDelete.Id));
         }
 
         [TestMethod]
         [ExpectedException(typeof(NullReferenceException))]
         public async Task Controller_DeletePlanetWithInvalidId_ReturnsException()
         {
-            var planetToDelete = planets.SingleOrDefault(s => s.Id == new Guid());
-            await controller.Delete(planetToDelete.Id);
+            var planetToDelete = _planets.SingleOrDefault(s => s.Id == new Guid());
+            await _controller.Delete(planetToDelete.Id);
         }
     }
 }

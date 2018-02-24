@@ -18,10 +18,10 @@ namespace SolarSystemCore.Tests.Controllers
     [TestClass]
     public class StarControllerTests
     {
-        private Star star { get; set; }
-        private IList<Star> stars { get; set; }
-        private IList<Star> starsToAdd { get; set; }
-        private StarController controller { get; set; }
+        private Star _star;
+        private List<Star> _stars;
+        private List<Star> _starsToAdd;
+        private StarController _controller;
 
         [TestInitialize]
         public void Setup()
@@ -33,11 +33,11 @@ namespace SolarSystemCore.Tests.Controllers
             var dbContext = new DBContext(options);
 
             var testDataHelper = new TestHelper.StarData();
-            stars = testDataHelper.GetStars();
-            star = testDataHelper.GetStar();
-            starsToAdd = testDataHelper.GetStarsToAdd();
+            _stars = testDataHelper.GetStars();
+            _star = testDataHelper.GetStar();
+            _starsToAdd = testDataHelper.GetStarsToAdd();
 
-            foreach (var s in stars)
+            foreach (var s in _stars)
             {
                 dbContext.Stars.Add(s);
             }
@@ -45,16 +45,17 @@ namespace SolarSystemCore.Tests.Controllers
             dbContext.SaveChanges();
 
             var repository = new Repository<Star>(dbContext);
-            var service = new StarService(repository);
+            var starRepository = new StarRepository(repository);
+            var service = new StarService(starRepository);
             var logger = new NullLogger<StarController>();
             IAppSettings appSettings = new AppSettings();
-            controller = new StarController(service, appSettings, logger);
+            _controller = new StarController(service, appSettings, logger);
         }
 
         [TestMethod]
         public async Task Controller_GetAllStars_ReturnsExpectedNumberOfStars()
         {
-            var result = await controller.Get();
+            var result = await _controller.Get();
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Count());
         }
@@ -62,7 +63,7 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_GetAllStars_ReturnsUnexpectedNumberOfStars()
         {
-            var result = await controller.Get();
+            var result = await _controller.Get();
             Assert.IsNotNull(result);
             Assert.AreNotEqual(3, result.Count());
         }
@@ -70,7 +71,7 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_GetStar_ReturnsExpectedResult()
         {
-            var result = await controller.Get(stars.FirstOrDefault().Id);
+            var result = await _controller.Get(_stars.FirstOrDefault().Id);
             Assert.IsNotNull(result);
             Assert.AreEqual("Star 1", result.Name);
         }
@@ -78,7 +79,7 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_GetStar_ReturnsUnexpectedResult()
         {
-            var result = await controller.Get(stars.FirstOrDefault().Id);
+            var result = await _controller.Get(_stars.FirstOrDefault().Id);
             Assert.IsNotNull(result);
             Assert.AreNotEqual("Star 2", result.Name);
         }
@@ -86,41 +87,41 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_AddStar_ReturnsExpectedResult()
         {
-            var result = await controller.Post(star);
+            var result = await _controller.Post(_star);
             Assert.IsNotNull(result);
-            Assert.AreEqual(result.Name, star.Name);
+            Assert.AreEqual(result.Name, _star.Name);
         }
 
         [TestMethod]
         [ExpectedException(typeof(NullReferenceException))]
         public async Task Controller_AddNullStar_ReturnsException()
         {
-            var result = await controller.Post(new Star());
+            var result = await _controller.Post(new Star());
         }
 
         [TestMethod]
         public async Task Controller_AddStarList_ReturnsExpectedResult()
         {
-            var result = await controller.Post(starsToAdd);
+            var result = await _controller.Post(_starsToAdd);
             Assert.IsNotNull(result);
-            Assert.AreEqual(result.Count(), starsToAdd.Count());
-            Assert.AreEqual(result.FirstOrDefault().Name, starsToAdd.FirstOrDefault().Name);
-            Assert.AreEqual(result.Skip(1).Take(1).FirstOrDefault().Name, starsToAdd.Skip(1).Take(1).FirstOrDefault().Name);
+            Assert.AreEqual(result.Count(), _starsToAdd.Count());
+            Assert.AreEqual(result.FirstOrDefault().Name, _starsToAdd.FirstOrDefault().Name);
+            Assert.AreEqual(result.Skip(1).Take(1).FirstOrDefault().Name, _starsToAdd.Skip(1).Take(1).FirstOrDefault().Name);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public async Task Controller_AddNullStarList_ReturnsException()
         {
-            var result = await controller.Post(new List<Star>());
+            var result = await _controller.Post(new List<Star>());
         }
 
         [TestMethod]
         public async Task Controller_SaveStar_ReturnsExpectedResult()
         {
-            var starToSave = stars.SingleOrDefault(s => s.Id == stars.FirstOrDefault().Id);
+            var starToSave = _stars.SingleOrDefault(s => s.Id == _stars.FirstOrDefault().Id);
             starToSave.Name = "Star 1 Saved";
-            var result = await controller.Put(starToSave.Id, starToSave);
+            var result = await _controller.Put(starToSave.Id, starToSave);
             Assert.IsNotNull(result);
             Assert.AreEqual(result.Name, starToSave.Name);
         }
@@ -129,25 +130,25 @@ namespace SolarSystemCore.Tests.Controllers
         [ExpectedException(typeof(NullReferenceException))]
         public async Task Controller_SaveNullStar_ReturnsException()
         {
-            var starToSave = stars.SingleOrDefault(s => s.Id == new Guid());
+            var starToSave = _stars.SingleOrDefault(s => s.Id == new Guid());
             starToSave.Name = "Star 1 Saved";
-            var result = await controller.Put(starToSave.Id, starToSave);
+            var result = await _controller.Put(starToSave.Id, starToSave);
         }
 
         [TestMethod]
         public async Task Controller_DeleteStarWithValidId_ReturnsExpectedResult()
         {
-            var starToDelete = stars.SingleOrDefault(s => s.Id == stars.FirstOrDefault().Id);
-            await controller.Delete(starToDelete.Id);
-            Assert.IsNull(await controller.Get(starToDelete.Id));
+            var starToDelete = _stars.SingleOrDefault(s => s.Id == _stars.FirstOrDefault().Id);
+            await _controller.Delete(starToDelete.Id);
+            Assert.IsNull(await _controller.Get(starToDelete.Id));
         }
 
         [TestMethod]
         [ExpectedException(typeof(NullReferenceException))]
         public async Task Controller_DeleteStarWithInvalidId_ReturnsException()
         {
-            var starToDelete = stars.SingleOrDefault(s => s.Id == new Guid());
-            await controller.Delete(starToDelete.Id);
+            var starToDelete = _stars.SingleOrDefault(s => s.Id == new Guid());
+            await _controller.Delete(starToDelete.Id);
         }
     }
 }

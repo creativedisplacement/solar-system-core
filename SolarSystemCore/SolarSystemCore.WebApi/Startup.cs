@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Serilog;
 using SolarSystemCore.Core;
 using SolarSystemCore.Data;
@@ -20,14 +22,14 @@ namespace SolarSystemCore.WebApi
 {
     public class Startup
     {
-        private IConfigurationRoot _configuration;
+        private readonly IConfigurationRoot _configuration;
 
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
             .SetBasePath(env.ContentRootPath)
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+            .AddJsonFile("appsettings.json", false, true)
+            .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
             .AddEnvironmentVariables();
             _configuration = builder.Build();
             Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(_configuration).CreateLogger();
@@ -39,7 +41,10 @@ namespace SolarSystemCore.WebApi
             services.AddDbContext<DBContext>(options => options.UseSqlServer(_configuration["Data:ConnectionString"]));
             services.AddSingleton<IConfiguration>(_configuration);
             services.AddSingleton<IAppSettings>(_configuration.GetSection("AppSettings").Get<AppSettings>());
-            services.AddMvc();
+            services.AddMvc().AddJsonOptions(options => {
+                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
         }
 
         // Use StructureMap-specific APIs to register services in the registry.

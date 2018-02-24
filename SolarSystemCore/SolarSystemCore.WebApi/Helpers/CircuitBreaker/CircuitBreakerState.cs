@@ -4,21 +4,21 @@ namespace SolarSystemCore.WebApi.Helpers.CircuitBreaker
 {
     public abstract class CircuitBreakerState
     {
-        protected readonly CircuitBreaker circuitBreaker;
+        protected readonly CircuitBreaker CircuitBreaker;
 
         protected CircuitBreakerState(CircuitBreaker circuitBreaker)
         {
-            this.circuitBreaker = circuitBreaker;
+            this.CircuitBreaker = circuitBreaker;
         }
 
         public virtual CircuitBreaker ExecutionStart()
         {
-            return this.circuitBreaker;
+            return this.CircuitBreaker;
         }
         public virtual void ExecutionComplete() { }
         public virtual void ExecutionFail(Exception e)
         {
-            circuitBreaker.IncreaseFailureCount();
+            CircuitBreaker.IncreaseFailureCount();
         }
 
         public virtual CircuitBreakerState Update()

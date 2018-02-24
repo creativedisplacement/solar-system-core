@@ -15,10 +15,10 @@ namespace SolarSystemCore.Tests.Services
     [TestClass]
     public class PlanetServiceTests
     {
-        public IPlanetService service { get; set; }
-        public Planet planet { get; set; }
-        public IList<Planet> planets { get; set; }
-        public IList<Planet> planetsToAdd { get; set; }
+        private IPlanetService _service;
+        private Planet _planet;
+        private List<Planet> _planets;
+        private List<Planet> _planetsToAdd;
 
         [TestInitialize]
         public void Setup()
@@ -30,11 +30,11 @@ namespace SolarSystemCore.Tests.Services
             var dbContext = new DBContext(options);
 
             var testDataHelper = new TestHelper.PlanetData();
-            planets = testDataHelper.GetPlanets();
-            planet = testDataHelper.GetPlanet();
-            planetsToAdd = testDataHelper.GetPlanetsToAdd();
+            _planets = testDataHelper.GetPlanets();
+            _planet = testDataHelper.GetPlanet();
+            _planetsToAdd = testDataHelper.GetPlanetsToAdd();
 
-            foreach (var p in planets)
+            foreach (var p in _planets)
             {
                 dbContext.Planets.Add(p);
             }
@@ -42,13 +42,14 @@ namespace SolarSystemCore.Tests.Services
             dbContext.SaveChanges();
 
             var repository = new Repository<Planet>(dbContext);
-            service = new PlanetService(repository);
+            var planetRepository = new PlanetRepository(repository);
+            _service = new PlanetService(planetRepository);
         }
 
         [TestMethod]
         public async Task Service_GetAllPlanets_ReturnsExpectedNumberOfPlanets()
         {
-            var result = await service.GetAllPlanetsAsync();
+            var result = await _service.GetAllPlanets();
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Count());
         }
@@ -56,7 +57,7 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_GetAllPlanets_ReturnsUnexpectedNumberOfPlanets()
         {
-            var result = await service.GetAllPlanetsAsync();
+            var result = await _service.GetAllPlanets();
             Assert.IsNotNull(result);
             Assert.AreNotEqual(3, result.Count());
         }
@@ -64,7 +65,7 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_GetAllPlanetsByStarId_ReturnsExpectedNumberOfPlanets()
         {
-            var result = await service.GetAllPlanetsByStarIdAsync(planets.FirstOrDefault().StarId);
+            var result = await _service.GetAllPlanetsByStarId(_planets.FirstOrDefault().StarId);
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual(result.FirstOrDefault().Name, "Planet 1");
@@ -73,7 +74,7 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_GetAllPlanetsByStarId_ReturnsUnexpectedPlanet()
         {
-            var result = await service.GetAllPlanetsByStarIdAsync(planets.Skip(1).Take(1).FirstOrDefault().StarId);
+            var result = await _service.GetAllPlanetsByStarId(_planets.Skip(1).Take(1).FirstOrDefault().StarId);
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());
             Assert.AreNotEqual(result.FirstOrDefault().Name, "Planet 1");
@@ -82,7 +83,7 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_GetPlanet_ReturnsExpectedResult()
         {
-            var result = await service.GetPlanetAsync(planets.Skip(1).Take(1).FirstOrDefault().Id);
+            var result = await _service.GetPlanet(_planets.Skip(1).Take(1).FirstOrDefault().Id);
             Assert.IsNotNull(result);
             Assert.AreEqual("Planet 2", result.Name);
         }
@@ -90,7 +91,7 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_GetPlanet_ReturnsUnexpectedResult()
         {
-            var result = await service.GetPlanetAsync(planets.FirstOrDefault().Id);
+            var result = await _service.GetPlanet(_planets.FirstOrDefault().Id);
             Assert.IsNotNull(result);
             Assert.AreNotEqual("Planet 2", result.Name);
         }
@@ -98,7 +99,7 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_FindPlanet_ReturnsExpectedPlanet()
         {
-            var result = await service.FindPlanetsAsync(p => p.Id == planets.FirstOrDefault().Id);
+            var result = await _service.FindPlanets(p => p.Id == _planets.FirstOrDefault().Id);
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual(result.FirstOrDefault().Name, "Planet 1");
@@ -107,7 +108,7 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_FindPlanet_ReturnsUnexpectedPlanet()
         {
-            var result = await service.FindPlanetsAsync(p => p.Id == planets.FirstOrDefault().Id);
+            var result = await _service.FindPlanets(p => p.Id == _planets.FirstOrDefault().Id);
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());
             Assert.AreNotEqual(result.FirstOrDefault().Name, "Planet 2");
@@ -116,26 +117,26 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_AddPlanet_ReturnsExpectedResult()
         {
-            var result = await service.AddPlanetAsync(planet);
+            var result = await _service.AddPlanet(_planet);
             Assert.IsNotNull(result);
-            Assert.AreEqual(result.Name, planet.Name);
+            Assert.AreEqual(result.Name, _planet.Name);
         }
 
         [TestMethod]
         [ExpectedException(typeof(NullReferenceException))]
         public async Task Service_AddNullPlanet_ReturnsException()
         {
-            var result = await service.AddPlanetAsync(new Planet());
+            var result = await _service.AddPlanet(new Planet());
         }
 
         [TestMethod]
         public async Task Service_AddPlanetList_ReturnsExpectedResult()
         {
-            var result = await service.AddPlanetsAsync(planetsToAdd);
+            var result = await _service.AddPlanets(_planetsToAdd);
             Assert.IsNotNull(result);
-            Assert.AreEqual(result.Count(), planetsToAdd.Count());
-            Assert.AreEqual(result.FirstOrDefault().Name, planetsToAdd.FirstOrDefault().Name);
-            Assert.AreEqual(result.Skip(1).Take(1).FirstOrDefault().Name, planetsToAdd.Skip(1).Take(1).FirstOrDefault().Name);
+            Assert.AreEqual(result.Count(), _planetsToAdd.Count());
+            Assert.AreEqual(result.FirstOrDefault().Name, _planetsToAdd.FirstOrDefault().Name);
+            Assert.AreEqual(result.Skip(1).Take(1).FirstOrDefault().Name, _planetsToAdd.Skip(1).Take(1).FirstOrDefault().Name);
         }
 
         [TestMethod]
@@ -143,15 +144,15 @@ namespace SolarSystemCore.Tests.Services
         public async Task Service_AddNullPlanetList_ReturnsException()
         {
             var planets = new List<Planet>();
-            var result = await service.AddPlanetsAsync(planets);
+            var result = await _service.AddPlanets(planets);
         }
 
         [TestMethod]
         public async Task Service_SavePlanet_ReturnsExpectedResult()
         {
-            var planetToSave = planets.SingleOrDefault(s => s.Id == planets.FirstOrDefault().Id);
+            var planetToSave = _planets.SingleOrDefault(s => s.Id == _planets.FirstOrDefault().Id);
             planetToSave.Name = "Planet 1 Saved";
-            var result = await service.SavePlanetAsync(planetToSave);
+            var result = await _service.SavePlanet(planetToSave);
             Assert.IsNotNull(result);
             Assert.AreEqual(result.Name, planetToSave.Name);
         }
@@ -160,25 +161,25 @@ namespace SolarSystemCore.Tests.Services
         [ExpectedException(typeof(NullReferenceException))]
         public async Task Service_SaveNullPlanet_ReturnsException()
         {
-            var planetToSave = planets.SingleOrDefault(s => s.Id == new Guid());
+            var planetToSave = _planets.SingleOrDefault(s => s.Id == new Guid());
             planetToSave.Name = "Planet 1 Saved";
-            var result = await service.SavePlanetAsync(planetToSave);
+            var result = await _service.SavePlanet(planetToSave);
         }
 
         [TestMethod]
         public async Task Service_DeletePlanetWithValidId_ReturnsExpectedResult()
         {
-            var planetToDelete = planets.SingleOrDefault(s => s.Id == planets.FirstOrDefault().Id);
-            await service.DeletePlanetAsync(planetToDelete.Id);
-            Assert.IsNull(await service.GetPlanetAsync(planetToDelete.Id));
+            var planetToDelete = _planets.SingleOrDefault(s => s.Id == _planets.FirstOrDefault().Id);
+            await _service.DeletePlanet(planetToDelete.Id);
+            Assert.IsNull(await _service.GetPlanet(planetToDelete.Id));
         }
 
         [TestMethod]
         [ExpectedException(typeof(NullReferenceException))]
         public async Task Service_DeletePlanetWithInvalidId_ReturnsException()
         {
-            var planetToDelete = planets.SingleOrDefault(s => s.Id == new Guid());
-            await service.DeletePlanetAsync(planetToDelete.Id);
+            var planetToDelete = _planets.SingleOrDefault(s => s.Id == new Guid());
+            await _service.DeletePlanet(planetToDelete.Id);
         }
     }
 }

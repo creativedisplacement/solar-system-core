@@ -14,10 +14,10 @@ namespace SolarSystemCore.WebApi.Helpers.CircuitBreaker
         public override void ExecutionFail(Exception e)
         {
             base.ExecutionFail(e);
-            if (circuitBreaker.IsThresholdReached())
+            if (CircuitBreaker.IsThresholdReached())
             {
                 //if we've reached the specified fail threshold, set to "open state"
-                circuitBreaker.MoveToOpenState();
+                CircuitBreaker.MoveToOpenState();
             }
         }
     }

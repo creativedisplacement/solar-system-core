@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SolarSystemCore.Models
 {
-    public partial class Planet : BaseEntity
+    public class Planet : BaseEntity
     {
         [ForeignKey("StarId")]
         public virtual Star Star { get; set; }

@@ -13,40 +13,39 @@ namespace SolarSystemCore.WebApi.Controllers
     [Route("api/[controller]")]
     public class PlanetController : Controller
     {
-        private readonly IPlanetService planetService;
-        private readonly IAppSettings appSettings;
-        private readonly ILogger<PlanetController> logger;
-        private static Helpers.CircuitBreaker.CircuitBreaker circuitBreaker;
+        private readonly IPlanetService _planetService;
+        private readonly ILogger<PlanetController> _logger;
+        private static Helpers.CircuitBreaker.CircuitBreaker _circuitBreaker;
 
         public PlanetController(IPlanetService planetService, IAppSettings appSettings, ILogger<PlanetController> logger)
         {
-            this.planetService = planetService;
-            this.appSettings = appSettings;
-            this.logger = logger;
-            if (circuitBreaker == null)
+            this._planetService = planetService;
+            this._logger = logger;
+            if (_circuitBreaker == null)
             {
-                circuitBreaker = new Helpers.CircuitBreaker.CircuitBreaker("planet_breaker", appSettings.FailureThreshold, TimeSpan.FromSeconds(appSettings.OpenCircuitTimeout));
+                _circuitBreaker = new Helpers.CircuitBreaker.CircuitBreaker("planet_breaker", appSettings.FailureThreshold, TimeSpan.FromSeconds(appSettings.OpenCircuitTimeout));
             }
         }
+
         [HttpGet]
-        public async Task<IEnumerable<Planet>> Get() => await circuitBreaker.ExecuteAsync(async () => { return await planetService.GetAllPlanetsAsync(); });
+        public async Task<List<Planet>> Get() => await _circuitBreaker.ExecuteAsync(async () => await _planetService.GetAllPlanets());
 
         [HttpGet("{id:guid}")]
-        public async Task<Planet> Get(Guid id) => await circuitBreaker.ExecuteAsync(async () => { return await planetService.GetPlanetAsync(id); }); 
+        public async Task<Planet> Get(Guid id) => await _circuitBreaker.ExecuteAsync(async () => await _planetService.GetPlanet(id)); 
 
         [HttpGet("star/{id:guid}")]
-        public async Task<IEnumerable<Planet>> Get(Guid id, string star) => await  circuitBreaker.ExecuteAsync(async () => { return await planetService.GetAllPlanetsByStarIdAsync(id); }); 
+        public async Task<IEnumerable<Planet>> Get(Guid id, string star) => await  _circuitBreaker.ExecuteAsync(async () => await _planetService.GetAllPlanetsByStarId(id)); 
 
         [HttpPost]
-        public async Task<Planet> Post([FromBody]Planet planet) => await circuitBreaker.ExecuteAsync(async () => { return await planetService.AddPlanetAsync(planet); }); 
+        public async Task<Planet> Post([FromBody]Planet planet) => await _circuitBreaker.ExecuteAsync(async () => await _planetService.AddPlanet(planet)); 
 
         [HttpPost]
-        public async Task<IEnumerable<Planet>> Post([FromBody]IEnumerable<Planet> planets) => await circuitBreaker.ExecuteAsync(async () => { return await planetService.AddPlanetsAsync(planets); }); 
+        public async Task<List<Planet>> Post([FromBody]List<Planet> planets) => await _circuitBreaker.ExecuteAsync(async () => await _planetService.AddPlanets(planets)); 
 
         [HttpPut("{id:guid}")]
-        public async Task<Planet> Put(Guid id, [FromBody]Planet planet) => await circuitBreaker.ExecuteAsync(async () => { return await planetService.SavePlanetAsync(planet); }); 
+        public async Task<Planet> Put(Guid id, [FromBody]Planet planet) => await _circuitBreaker.ExecuteAsync(async () => await _planetService.SavePlanet(planet)); 
 
         [HttpDelete("{id:guid}")]
-        public async Task Delete(Guid id) => await circuitBreaker.ExecuteAsync(async () => { await planetService.DeletePlanetAsync(id); }); 
+        public async Task Delete(Guid id) => await _circuitBreaker.ExecuteAsync(async () => { await _planetService.DeletePlanet(id); }); 
     }
 }

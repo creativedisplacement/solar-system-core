@@ -10,57 +10,57 @@ namespace SolarSystemCore.Services
 {
     public class PlanetService : IPlanetService
     {
-        private IRepository<Planet> planetRepository;
+        private readonly IPlanetRepository _planetRepository;
 
-        public PlanetService(IRepository<Planet> planetRepository) => this.planetRepository = planetRepository;
+        public PlanetService(IPlanetRepository planetRepository) => this._planetRepository = planetRepository;
 
-        public async Task<IEnumerable<Planet>> GetAllPlanetsAsync() => await planetRepository.GetAllAsync();
+        public Task<List<Planet>> GetAllPlanets() => _planetRepository.GetAllPlanets();
 
-        public async Task<IEnumerable<Planet>> GetAllPlanetsByStarIdAsync(Guid starId) => await planetRepository.FindAsync(p => p.StarId == starId);
+        public Task<List<Planet>> GetAllPlanetsByStarId(Guid starId) => _planetRepository.GetPlanetsByStarId(starId);
 
-        public async Task<Planet> GetPlanetAsync(Guid id) => await planetRepository.FirstOrDefaultAsync(p => p.Id == id);
+        public Task<Planet> GetPlanet(Guid id) => _planetRepository.GetPlanet(id);
 
-        public async Task<IEnumerable<Planet>> FindPlanetsAsync(Expression<Func<Planet, bool>> where) => await planetRepository.FindAsync(where);
+        public Task<List<Planet>> FindPlanets(Expression<Func<Planet, bool>> where) => _planetRepository.FindPlanets(where);
 
-        public async Task<Planet> AddPlanetAsync(Planet planet)
+        public Task<Planet> AddPlanet(Planet planet)
         {
             if (!string.IsNullOrEmpty(planet.Name))
             {
-                return await planetRepository.AddAsync(planet);
+                return _planetRepository.AddPlanet(planet);
             }
             throw new NullReferenceException();
         }
 
-        public async Task<IEnumerable<Planet>> AddPlanetsAsync(IEnumerable<Planet> planets)
+        public Task<List<Planet>> AddPlanets(List<Planet> planets)
         {
             var planetsToAdd = planets.Where(p => p.Name != null || p.Name != string.Empty).ToList();
 
-            if (planetsToAdd.Count() > 0)
+            if (planetsToAdd.Any())
             {
-                return await planetRepository.AddRangeAsync(planets);
+                return _planetRepository.AddPlanets(planetsToAdd);
             }
             throw new ArgumentException();
         }
         
-        public async Task<Planet> SavePlanetAsync(Planet planet)
+        public Task<Planet> SavePlanet(Planet planet)
         {
             if (planet.Id != Guid.Empty)
             {
-                return await planetRepository.SaveAsync(planet);
+                return _planetRepository.SavePlanet(planet);
             }
             throw new ArgumentException();
         }
        
-        public async Task DeletePlanetAsync(Guid id)
+        public async Task<Planet> DeletePlanet(Guid id)
         {
-            var planet = await GetPlanetAsync(id);
+            var planet = await GetPlanet(id);
 
-            if (planet != null && planet.Id == id)
+            if (planet?.Id != id)
             {
-                await planetRepository.DeleteAsync(planet);
-                return;
+                throw new ArgumentException();
             }
-            throw new ArgumentException();
+            await _planetRepository.DeletePlanet(planet);
+            return planet;
         }  
     }
 }

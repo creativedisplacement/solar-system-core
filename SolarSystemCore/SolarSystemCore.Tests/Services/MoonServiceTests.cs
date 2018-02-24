@@ -15,10 +15,10 @@ namespace SolarSystemCore.Tests.Services
     [TestClass]
     public class MoonServiceTests
     {
-        public IMoonService service { get; set; }
-        public Moon moon { get; set; }
-        public IList<Moon> moons { get; set; }
-        public IList<Moon> moonsToAdd { get; set; }
+        private IMoonService _service;
+        private Moon _moon;
+        private List<Moon> _moons;
+        private List<Moon> _moonsToAdd;
 
         [TestInitialize]
         public void Setup()
@@ -30,11 +30,11 @@ namespace SolarSystemCore.Tests.Services
             var dbContext = new DBContext(options);
 
             var testDataHelper = new TestHelper.MoonData();
-            moons = testDataHelper.GetMoons();
-            moon = testDataHelper.GetMoon();
-            moonsToAdd = testDataHelper.GetMoonsToAdd();
+            _moons = testDataHelper.GetMoons();
+            _moon = testDataHelper.GetMoon();
+            _moonsToAdd = testDataHelper.GetMoonsToAdd();
 
-            foreach (var p in moons)
+            foreach (var p in _moons)
             {
                 dbContext.Moons.Add(p);
             }
@@ -42,13 +42,14 @@ namespace SolarSystemCore.Tests.Services
             dbContext.SaveChanges();
 
             var repository = new Repository<Moon>(dbContext);
-            service = new MoonService(repository);
+            var moonRepository = new MoonRepository(repository);
+            _service = new MoonService(moonRepository);
         }
 
         [TestMethod]
         public async Task Service_GetAllMoons_ReturnsExpectedNumberOfMoons()
         {
-            var result = await service.GetAllMoonsAsync();
+            var result = await _service.GetAllMoons();
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Count());
         }
@@ -56,24 +57,24 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_GetAllMoons_ReturnsUnexpectedNumberOfMoons()
         {
-            var result = await service.GetAllMoonsAsync();
+            var result = await _service.GetAllMoons();
             Assert.IsNotNull(result);
-            Assert.AreNotEqual(3, (await service.GetAllMoonsAsync()).Count());
+            Assert.AreNotEqual(3, (await _service.GetAllMoons()).Count());
         }
 
         [TestMethod]
-        public async Task Service_GetAllMoonsByStarId_ReturnsExpectedNumberOfMoons()
+        public async Task Service_GetAllMoonsByPlanetId_ReturnsExpectedNumberOfMoons()
         {
-            var result = await service.GetAllMoonsByPlanetIdAsync(moons.FirstOrDefault().PlanetId);
+            var result = await _service.GetAllMoonsByPlanetId(_moons.FirstOrDefault().PlanetId);
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual(result.FirstOrDefault().Name, "Moon 1");
         }
 
         [TestMethod]
-        public async Task Service_GetAllMoonsByStarId_ReturnsUnexpectedMoon()
+        public async Task Service_GetAllMoonsByPlanetId_ReturnsUnexpectedMoon()
         {
-            var result = await service.GetAllMoonsByPlanetIdAsync(moons.Skip(1).Take(1).FirstOrDefault().PlanetId);
+            var result = await _service.GetAllMoonsByPlanetId(_moons.Skip(1).Take(1).FirstOrDefault().PlanetId);
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());
             Assert.AreNotEqual(result.FirstOrDefault().Name, "Moon 1");
@@ -82,7 +83,7 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_GetMoon_ReturnsExpectedResult()
         {
-            var result = await service.GetMoonAsync(moons.Skip(1).Take(1).FirstOrDefault().Id);
+            var result = await _service.GetMoon(_moons.Skip(1).Take(1).FirstOrDefault().Id);
             Assert.IsNotNull(result);
             Assert.AreEqual("Moon 2", result.Name);
         }
@@ -90,7 +91,7 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_GetMoon_ReturnsUnexpectedResult()
         {
-            var result = await service.GetMoonAsync(moons.FirstOrDefault().Id);
+            var result = await _service.GetMoon(_moons.FirstOrDefault().Id);
             Assert.IsNotNull(result);
             Assert.AreNotEqual("Moon 2", result.Name);
         }
@@ -98,7 +99,7 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_FindMoon_ReturnsExpectedMoon()
         {
-            var result = await service.FindMoonsAsync(p => p.Id == moons.FirstOrDefault().Id);
+            var result = await _service.FindMoons(p => p.Id == _moons.FirstOrDefault().Id);
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual(result.FirstOrDefault().Name, "Moon 1");
@@ -107,7 +108,7 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_FindMoon_ReturnsUnexpectedMoon()
         {
-            var result = await service.FindMoonsAsync(p => p.Id == moons.FirstOrDefault().Id);
+            var result = await _service.FindMoons(p => p.Id == _moons.FirstOrDefault().Id);
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());
             Assert.AreNotEqual(result.FirstOrDefault().Name, "Moon 2");
@@ -116,26 +117,26 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_AddMoon_ReturnsExpectedResult()
         {
-            var result = await service.AddMoonAsync(moon);
+            var result = await _service.AddMoon(_moon);
             Assert.IsNotNull(result);
-            Assert.AreEqual(result.Name, moon.Name);
+            Assert.AreEqual(result.Name, _moon.Name);
         }
 
         [TestMethod]
         [ExpectedException(typeof(NullReferenceException))]
         public async Task Service_AddNullMoon_ReturnsException()
         {
-            var result = await service.AddMoonAsync(new Moon());
+            var result = await _service.AddMoon(new Moon());
         }
 
         [TestMethod]
         public async Task Service_AddMoonList_ReturnsExpectedResult()
         {
-            var result = await service.AddMoonsAsync(moonsToAdd);
+            var result = await _service.AddMoons(_moonsToAdd);
             Assert.IsNotNull(result);
-            Assert.AreEqual(result.Count(), moonsToAdd.Count());
-            Assert.AreEqual(result.FirstOrDefault().Name, moonsToAdd.FirstOrDefault().Name);
-            Assert.AreEqual(result.Skip(1).Take(1).FirstOrDefault().Name, moonsToAdd.Skip(1).Take(1).FirstOrDefault().Name);
+            Assert.AreEqual(result.Count(), _moonsToAdd.Count());
+            Assert.AreEqual(result.FirstOrDefault().Name, _moonsToAdd.FirstOrDefault().Name);
+            Assert.AreEqual(result.Skip(1).Take(1).FirstOrDefault().Name, _moonsToAdd.Skip(1).Take(1).FirstOrDefault().Name);
         }
 
         [TestMethod]
@@ -143,15 +144,15 @@ namespace SolarSystemCore.Tests.Services
         public async Task Service_AddNullMoonList_ReturnsException()
         {
             var moons = new List<Moon>();
-            var result = await service.AddMoonsAsync(moons);
+            var result = await _service.AddMoons(moons);
         }
 
         [TestMethod]
         public async Task Service_SaveMoon_ReturnsExpectedResult()
         {
-            var moonToSave = moons.SingleOrDefault(s => s.Id == moons.FirstOrDefault().Id);
+            var moonToSave = _moons.SingleOrDefault(s => s.Id == _moons.FirstOrDefault().Id);
             moonToSave.Name = "Moon 1 Saved";
-            var result = await service.SaveMoonAsync(moonToSave);
+            var result = await _service.SaveMoon(moonToSave);
             Assert.IsNotNull(result);
             Assert.AreEqual(result.Name, moonToSave.Name);
         }
@@ -160,25 +161,25 @@ namespace SolarSystemCore.Tests.Services
         [ExpectedException(typeof(NullReferenceException))]
         public async Task Service_SaveNullMoon_ReturnsException()
         {
-            var moonToSave = moons.SingleOrDefault(s => s.Id == new Guid());
+            var moonToSave = _moons.SingleOrDefault(s => s.Id == new Guid());
             moonToSave.Name = "Moon 1 Saved";
-            var result = await service.SaveMoonAsync(moonToSave);
+            var result = await _service.SaveMoon(moonToSave);
         }
 
         [TestMethod]
         public async Task Service_DeleteMoonWithValidId_ReturnsExpectedResult()
         {
-            var moonToDelete = moons.SingleOrDefault(s => s.Id == moons.FirstOrDefault().Id);
-            await service.DeleteMoonAsync(moonToDelete.Id);
-            Assert.IsNull(await service.GetMoonAsync(moonToDelete.Id));
+            var moonToDelete = _moons.SingleOrDefault(s => s.Id == _moons.FirstOrDefault().Id);
+            await _service.DeleteMoon(moonToDelete.Id);
+            Assert.IsNull(await _service.GetMoon(moonToDelete.Id));
         }
 
         [TestMethod]
         [ExpectedException(typeof(NullReferenceException))]
         public async Task Service_DeleteMoonWithInvalidId_ReturnsException()
         {
-            var moonToDelete = moons.SingleOrDefault(s => s.Id == new Guid());
-            await service.DeleteMoonAsync(moonToDelete.Id);
+            var moonToDelete = _moons.SingleOrDefault(s => s.Id == new Guid());
+            await _service.DeleteMoon(moonToDelete.Id);
         }
     }
 }

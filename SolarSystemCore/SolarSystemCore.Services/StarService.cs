@@ -10,55 +10,55 @@ namespace SolarSystemCore.Services
 {
     public class StarService : IStarService
     {
-        private IRepository<Star> starRepository;
+        private readonly IStarRepository _starRepository;
 
-        public StarService(IRepository<Star> starRepository) => this.starRepository = starRepository;
+        public StarService(IStarRepository starRepository) => this._starRepository = starRepository;
 
-        public async Task<IEnumerable<Star>> GetAllStarsAsync() => await starRepository.GetAllAsync();
+        public Task<List<Star>> GetAllStars() => _starRepository.GetAllStars();
 
-        public async Task<Star> GetStarAsync(Guid id) => await starRepository.FirstOrDefaultAsync(p => p.Id == id);
+        public Task<Star> GetStar(Guid id) => _starRepository.GetStar(id);
 
-        public async Task<IEnumerable<Star>> FindStarsAsync(Expression<Func<Star, bool>> where) => await starRepository.FindAsync(where);
+        public Task<List<Star>> FindStars(Expression<Func<Star, bool>> where) => _starRepository.FindStars(where);
 
-        public async Task<Star> AddStarAsync(Star star)
+        public Task<Star> AddStar(Star star)
         {
             if (!string.IsNullOrEmpty(star.Name))
             {
-                return await starRepository.AddAsync(star);
+                return _starRepository.AddStar(star);
             }
             throw new NullReferenceException();
         }
 
-        public async Task<IEnumerable<Star>> AddStarsAsync(IEnumerable<Star> stars)
+        public Task<List<Star>> AddStars(List<Star> stars)
         {
             var starsToAdd = stars.Where(p => p.Name != null || p.Name != string.Empty).ToList();
 
-            if (starsToAdd.Count() > 0)
+            if (starsToAdd.Any())
             {
-                return await starRepository.AddRangeAsync(stars);
+                return _starRepository.AddStars(stars);
             }
             throw new ArgumentException();
         }
 
-        public async Task<Star> SaveStarAsync(Star star)
+        public Task<Star> SaveStar(Star star)
         {
             if (star.Id != Guid.Empty)
             {
-                return await starRepository.SaveAsync(star);
+                return _starRepository.SaveStar(star);
             }
             throw new ArgumentException();
         }
 
-        public async Task DeleteStarAsync(Guid id)
+        public async Task<Star> DeleteStar(Guid id)
         {
-            var star = await GetStarAsync(id);
+            var star = await GetStar(id);
 
-            if (star != null && star.Id == id)
+            if (star?.Id != id)
             {
-                await starRepository.DeleteAsync(star);
-                return;
+                throw new ArgumentException();
             }
-            throw new ArgumentException();
+            await _starRepository.DeleteStar(star);
+            return star;
         }
     }
 }

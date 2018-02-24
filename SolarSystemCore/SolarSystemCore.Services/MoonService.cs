@@ -10,57 +10,57 @@ namespace SolarSystemCore.Services
 {
     public class MoonService : IMoonService
     {
-        private IRepository<Moon> moonRepository;
+        private readonly IMoonRepository _moonRepository;
 
-        public MoonService(IRepository<Moon> moonRepository) => this.moonRepository = moonRepository;
+        public MoonService(IMoonRepository moonRepository) => this._moonRepository = moonRepository;
 
-        public async Task<IEnumerable<Moon>> GetAllMoonsAsync() => await moonRepository.GetAllAsync();
+        public Task<List<Moon>> GetAllMoons() => _moonRepository.GetAllMoons();
 
-        public async Task<IEnumerable<Moon>> GetAllMoonsByPlanetIdAsync(Guid planetId) => await moonRepository.FindAsync(p => p.PlanetId == planetId);
+        public Task<List<Moon>> GetAllMoonsByPlanetId(Guid id) => _moonRepository.GetMoonsByPlanetId(id);
 
-        public async Task<Moon> GetMoonAsync(Guid id) => await moonRepository.FirstOrDefaultAsync(p => p.Id == id);
+        public Task<Moon> GetMoon(Guid id) => _moonRepository.GetMoon(id);
 
-        public async Task<IEnumerable<Moon>> FindMoonsAsync(Expression<Func<Moon, bool>> where) => await moonRepository.FindAsync(where);
+        public Task<List<Moon>> FindMoons(Expression<Func<Moon, bool>> where) => _moonRepository.FindMoons(where);
 
-        public async Task<Moon> AddMoonAsync(Moon moon)
+        public Task<Moon> AddMoon(Moon moon)
         {
             if (!string.IsNullOrEmpty(moon.Name))
             {
-                return await moonRepository.AddAsync(moon);
+                return _moonRepository.AddMoon(moon);
             }
             throw new NullReferenceException();
         }
 
-        public async Task<IEnumerable<Moon>> AddMoonsAsync(IEnumerable<Moon> moons)
+        public Task<List<Moon>> AddMoons(List<Moon> moons)
         {
             var moonsToAdd = moons.Where(p => p.Name != null || p.Name != string.Empty).ToList();
 
-            if (moonsToAdd.Count() > 0)
+            if (moonsToAdd.Any())
             {
-                return await moonRepository.AddRangeAsync(moons);
+                return _moonRepository.AddMoons(moonsToAdd);
             }
             throw new ArgumentException();
         }
 
-        public async Task<Moon> SaveMoonAsync(Moon moon)
+        public Task<Moon> SaveMoon(Moon moon)
         {
             if (moon.Id != Guid.Empty)
             {
-                return await moonRepository.SaveAsync(moon);
+                return _moonRepository.SaveMoon(moon);
             }
             throw new ArgumentException();
         }
 
-        public async Task DeleteMoonAsync(Guid id)
+        public async Task<Moon> DeleteMoon(Guid id)
         {
-            var moon = await GetMoonAsync(id);
+            var moon = await GetMoon(id);
 
-            if (moon != null && moon.Id == id)
+            if (moon?.Id != id)
             {
-                await moonRepository.DeleteAsync(moon);
-                return;
+                throw new ArgumentException();
             }
-            throw new ArgumentException();
+            await _moonRepository.DeleteMoon(moon);
+            return moon;
         }
     }
 }

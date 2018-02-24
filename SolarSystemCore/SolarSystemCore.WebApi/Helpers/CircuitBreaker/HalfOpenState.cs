@@ -10,7 +10,7 @@ namespace SolarSystemCore.WebApi.Helpers.CircuitBreaker
         {
             //FAIL, set back to "open"
             base.ExecutionFail(e);
-            circuitBreaker.MoveToOpenState();
+            CircuitBreaker.MoveToOpenState();
         }
 
         public override void ExecutionComplete()
@@ -20,13 +20,13 @@ namespace SolarSystemCore.WebApi.Helpers.CircuitBreaker
 
             //Decrease count by one
             //if count = 0 then everything is hunky dory and set the circuit breaker to closed state
-            if (circuitBreaker.Failures > 0)
+            if (CircuitBreaker.Failures > 0)
             {
-                circuitBreaker.DecreaseFailureCount();
+                CircuitBreaker.DecreaseFailureCount();
             }
             else
             {
-                circuitBreaker.MoveToClosedState();
+                CircuitBreaker.MoveToClosedState();
             }
         }
     }

@@ -7,28 +7,19 @@ namespace SolarSystemCore.WebApi.Helpers.CircuitBreaker
 {
     public class CircuitBreaker
     {
-        private static ConcurrentDictionary<string, object> CircuitBreakerLocks = new ConcurrentDictionary<string, object>();
-        private static ConcurrentDictionary<string, int> CircuitBreakerExceptionCounts = new ConcurrentDictionary<string, int>();
+        private static readonly ConcurrentDictionary<string, object> CircuitBreakerLocks = new ConcurrentDictionary<string, object>();
+        private static readonly ConcurrentDictionary<string, int> CircuitBreakerExceptionCounts = new ConcurrentDictionary<string, int>();
 
         public string CircuitId { get; set; }
 
-        public object CircuitBreakLock
-        {
-            get
-            {
-                return CircuitBreakerLocks.GetOrAdd(CircuitId, new object());
-            }
-        }
+        public object CircuitBreakLock => CircuitBreakerLocks.GetOrAdd(CircuitId, new object());
 
-        private CircuitBreakerState state;
-        private Exception lastExecutionException = null;
+        private CircuitBreakerState _state;
+        private Exception _lastExecutionException = null;
 
         public int Failures
         {
-            get
-            {
-                return CircuitBreakerExceptionCounts.GetOrAdd(CircuitId, 0);
-            }
+            get => CircuitBreakerExceptionCounts.GetOrAdd(CircuitId, 0);
             set
             {
                 CircuitBreakerExceptionCounts.AddOrUpdate(CircuitId, value, (key, oldValue) => value);
@@ -64,15 +55,15 @@ namespace SolarSystemCore.WebApi.Helpers.CircuitBreaker
         /// <returns>Object of type T of default(T)</returns>
         public T Execute<T>(Func<T> funcToInvoke)
         {
-            object circuitBreakerLock = CircuitBreakLock;
+            var circuitBreakerLock = CircuitBreakLock;
 
-            T response = default(T);
-            this.lastExecutionException = null;
+            T response;
+            this._lastExecutionException = null;
 
             lock (circuitBreakerLock)
             {
-                state.ExecutionStart();
-                if (state is OpenState)
+                _state.ExecutionStart();
+                if (_state is OpenState)
                 {
                     throw new Exception(System.Net.HttpStatusCode.ServiceUnavailable.ToString());
                 }
@@ -90,8 +81,8 @@ namespace SolarSystemCore.WebApi.Helpers.CircuitBreaker
             {
                 lock (circuitBreakerLock)
                 {
-                    lastExecutionException = e;
-                    state.ExecutionFail(e);
+                    _lastExecutionException = e;
+                    _state.ExecutionFail(e);
                 }
                 //TODO:implement logging Elmah.ErrorSignal.FromCurrentContext().Raise(e);
                 throw;
@@ -100,7 +91,7 @@ namespace SolarSystemCore.WebApi.Helpers.CircuitBreaker
             {
                 lock (circuitBreakerLock)
                 {
-                    state.ExecutionComplete();
+                    _state.ExecutionComplete();
                 }
             }
 
@@ -115,11 +106,11 @@ namespace SolarSystemCore.WebApi.Helpers.CircuitBreaker
         /// <returns>Object of type T of default(T)</returns>
         public async Task<T> ExecuteAsync<T>(Func<Task<T>> funcToInvoke)
         {
-            T response = default(T);
-            this.lastExecutionException = null;
+            T response;
+            this._lastExecutionException = null;
 
-            state.ExecutionStart();
-            if (state is OpenState)
+            _state.ExecutionStart();
+            if (_state is OpenState)
             {
                 //Stop execution of this method
                 throw new Exception(System.Net.HttpStatusCode.ServiceUnavailable.ToString()); 
@@ -133,14 +124,14 @@ namespace SolarSystemCore.WebApi.Helpers.CircuitBreaker
             }
             catch (Exception e)
             {
-                lastExecutionException = e;
-                state.ExecutionFail(e);
+                _lastExecutionException = e;
+                _state.ExecutionFail(e);
                 //TODO:implement logging Elmah.ErrorSignal.FromCurrentContext().Raise(e);
                 throw;
             }
             finally
             {
-                state.ExecutionComplete();
+                _state.ExecutionComplete();
             }
 
             return response;
@@ -152,10 +143,10 @@ namespace SolarSystemCore.WebApi.Helpers.CircuitBreaker
         /// <param name="funcToIvoke"></param>
         public async Task ExecuteAsync(Func<Task> funcToInvoke)
         {
-            this.lastExecutionException = null;
+            this._lastExecutionException = null;
 
-            state.ExecutionStart();
-            if (state is OpenState)
+            _state.ExecutionStart();
+            if (_state is OpenState)
             {
                 //Stop execution of this method
                 throw new Exception(System.Net.HttpStatusCode.ServiceUnavailable.ToString());
@@ -169,32 +160,23 @@ namespace SolarSystemCore.WebApi.Helpers.CircuitBreaker
             }
             catch (Exception e)
             {
-                lastExecutionException = e;
-                state.ExecutionFail(e);
+                _lastExecutionException = e;
+                _state.ExecutionFail(e);
                 //TODO:implement logging Elmah.ErrorSignal.FromCurrentContext().Raise(e);
                 throw;
             }
             finally
             {
-                state.ExecutionComplete();
+                _state.ExecutionComplete();
             }
         }
 
         #region State Management
-        public bool IsClosed
-        {
-            get { return state.Update() is ClosedState; }
-        }
+        public bool IsClosed => _state.Update() is ClosedState;
 
-        public bool IsOpen
-        {
-            get { return state.Update() is OpenState; }
-        }
+        public bool IsOpen => _state.Update() is OpenState;
 
-        public bool IsHalfOpen
-        {
-            get { return state.Update() is HalfOpenState; }
-        }
+        public bool IsHalfOpen => _state.Update() is HalfOpenState;
 
         public bool IsThresholdReached()
         {
@@ -203,35 +185,25 @@ namespace SolarSystemCore.WebApi.Helpers.CircuitBreaker
 
         public Exception GetLastExecutionException()
         {
-            return lastExecutionException;
-        }
-
-        void Close()
-        {
-            MoveToClosedState();
-        }
-
-        void Open()
-        {
-            MoveToOpenState();
+            return _lastExecutionException;
         }
 
         internal CircuitBreakerState MoveToClosedState()
         {
-            state = new ClosedState(this);
-            return state;
+            _state = new ClosedState(this);
+            return _state;
         }
 
         internal CircuitBreakerState MoveToOpenState()
         {
-            state = new OpenState(this);
-            return state;
+            _state = new OpenState(this);
+            return _state;
         }
 
         internal CircuitBreakerState MoveToHalfOpenState()
         {
-            state = new HalfOpenState(this);
-            return state;
+            _state = new HalfOpenState(this);
+            return _state;
         }
 
         internal void IncreaseFailureCount()

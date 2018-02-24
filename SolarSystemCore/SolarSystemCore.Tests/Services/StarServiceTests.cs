@@ -15,10 +15,10 @@ namespace SolarSystemCore.Tests.Services
     [TestClass]
     public class StarServiceTests
     {
-        public IStarService service { get; set; }
-        public Star star { get; set; }
-        public IList<Star> stars { get; set; }
-        public IList<Star> starsToAdd { get; set; }
+        private IStarService _service;
+        private Star _star;
+        private List<Star> _stars;
+        private List<Star> _starsToAdd;
 
         [TestInitialize]
         public void Setup()
@@ -30,11 +30,11 @@ namespace SolarSystemCore.Tests.Services
             var dbContext = new DBContext(options);
 
             var testDataHelper = new TestHelper.StarData();
-            stars = testDataHelper.GetStars();
-            star = testDataHelper.GetStar();
-            starsToAdd = testDataHelper.GetStarsToAdd();
+            _stars = testDataHelper.GetStars();
+            _star = testDataHelper.GetStar();
+            _starsToAdd = testDataHelper.GetStarsToAdd();
 
-            foreach (var p in stars)
+            foreach (var p in _stars)
             {
                 dbContext.Stars.Add(p);
             }
@@ -42,13 +42,14 @@ namespace SolarSystemCore.Tests.Services
             dbContext.SaveChanges();
 
             var repository = new Repository<Star>(dbContext);
-            service = new StarService(repository);
+            var starRepository = new StarRepository(repository);
+            _service = new StarService(starRepository);
         }
 
         [TestMethod]
         public async Task Service_GetAllStars_ReturnsExpectedNumberOfStars()
         {
-            var result = await service.GetAllStarsAsync();
+            var result = await _service.GetAllStars();
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Count());
         }
@@ -56,15 +57,15 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_GetAllStars_ReturnsUnexpectedNumberOfStars()
         {
-            var result = await service.GetAllStarsAsync();
+            var result = await _service.GetAllStars();
             Assert.IsNotNull(result);
-            Assert.AreNotEqual(3, (await service.GetAllStarsAsync()).Count());
+            Assert.AreNotEqual(3, (await _service.GetAllStars()).Count());
         }
 
         [TestMethod]
         public async Task Service_GetStar_ReturnsExpectedResult()
         {
-            var result = await service.GetStarAsync(new Guid("591D922F-D11C-469F-B61B-AF783D71E60A"));
+            var result = await _service.GetStar(new Guid("591D922F-D11C-469F-B61B-AF783D71E60A"));
             Assert.IsNotNull(result);
             Assert.AreEqual("Star 2", result.Name);
         }
@@ -72,7 +73,7 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_GetStar_ReturnsUnexpectedResult()
         {
-            var result = await service.GetStarAsync(new Guid("DF9AA280-C912-4E42-A5B5-4573CF97FDB0"));
+            var result = await _service.GetStar(new Guid("DF9AA280-C912-4E42-A5B5-4573CF97FDB0"));
             Assert.IsNotNull(result);
             Assert.AreNotEqual("Star 2", result.Name);
         }
@@ -80,7 +81,7 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_FindStar_ReturnsExpectedStar()
         {
-            var result = await service.FindStarsAsync(p => p.Id == new Guid("DF9AA280-C912-4E42-A5B5-4573CF97FDB0"));
+            var result = await _service.FindStars(p => p.Id == new Guid("DF9AA280-C912-4E42-A5B5-4573CF97FDB0"));
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual(result.FirstOrDefault().Name, "Star 1");
@@ -89,7 +90,7 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_FindStar_ReturnsUnexpectedStar()
         {
-            var result = await service.FindStarsAsync(p => p.Id == new Guid("DF9AA280-C912-4E42-A5B5-4573CF97FDB0"));
+            var result = await _service.FindStars(p => p.Id == new Guid("DF9AA280-C912-4E42-A5B5-4573CF97FDB0"));
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());
             Assert.AreNotEqual(result.FirstOrDefault().Name, "Star 2");
@@ -98,26 +99,26 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_AddStar_ReturnsExpectedResult()
         {
-            var result = await service.AddStarAsync(star);
+            var result = await _service.AddStar(_star);
             Assert.IsNotNull(result);
-            Assert.AreEqual(result.Name, star.Name);
+            Assert.AreEqual(result.Name, _star.Name);
         }
 
         [TestMethod]
         [ExpectedException(typeof(NullReferenceException))]
         public async Task Service_AddNullStar_ReturnsException()
         {
-            var result = await service.AddStarAsync(new Star());
+            var result = await _service.AddStar(new Star());
         }
 
         [TestMethod]
         public async Task Service_AddStarList_ReturnsExpectedResult()
         {
-            var result = await service.AddStarsAsync(starsToAdd);
+            var result = await _service.AddStars(_starsToAdd);
             Assert.IsNotNull(result);
-            Assert.AreEqual(result.Count(), starsToAdd.Count());
-            Assert.AreEqual(result.FirstOrDefault().Name, starsToAdd.FirstOrDefault().Name);
-            Assert.AreEqual(result.Skip(1).Take(1).FirstOrDefault().Name, starsToAdd.Skip(1).Take(1).FirstOrDefault().Name);
+            Assert.AreEqual(result.Count(), _starsToAdd.Count());
+            Assert.AreEqual(result.FirstOrDefault().Name, _starsToAdd.FirstOrDefault().Name);
+            Assert.AreEqual(result.Skip(1).Take(1).FirstOrDefault().Name, _starsToAdd.Skip(1).Take(1).FirstOrDefault().Name);
         }
 
         [TestMethod]
@@ -125,15 +126,15 @@ namespace SolarSystemCore.Tests.Services
         public async Task Service_AddNullStarList_ReturnsException()
         {
             var stars = new List<Star>();
-            var result = await service.AddStarsAsync(stars);
+            var result = await _service.AddStars(stars);
         }
 
         [TestMethod]
         public async Task Service_SaveStar_ReturnsExpectedResult()
         {
-            var starToSave = stars.SingleOrDefault(s => s.Id == stars.FirstOrDefault().Id);
+            var starToSave = _stars.SingleOrDefault(s => s.Id == _stars.FirstOrDefault().Id);
             starToSave.Name = "Star 1 Saved";
-            var result = await service.SaveStarAsync(starToSave);
+            var result = await _service.SaveStar(starToSave);
             Assert.IsNotNull(result);
             Assert.AreEqual(result.Name, starToSave.Name);
         }
@@ -142,25 +143,25 @@ namespace SolarSystemCore.Tests.Services
         [ExpectedException(typeof(NullReferenceException))]
         public async Task Service_SaveNullStar_ReturnsException()
         {
-            var starToSave = stars.SingleOrDefault(s => s.Id == new Guid("030B729D-60BF-4A26-B38C-F59F85296D35"));
+            var starToSave = _stars.SingleOrDefault(s => s.Id == new Guid("030B729D-60BF-4A26-B38C-F59F85296D35"));
             starToSave.Name = "Star 1 Saved";
-            var result = await service.SaveStarAsync(starToSave);
+            var result = await _service.SaveStar(starToSave);
         }
 
         [TestMethod]
         public async Task Service_DeleteStarWithValidId_ReturnsExpectedResult()
         {
-            var starToDelete = stars.SingleOrDefault(s => s.Id == new Guid("DF9AA280-C912-4E42-A5B5-4573CF97FDB0"));
-            await service.DeleteStarAsync(starToDelete.Id);
-            Assert.IsNull(await service.GetStarAsync(starToDelete.Id));
+            var starToDelete = _stars.SingleOrDefault(s => s.Id == new Guid("DF9AA280-C912-4E42-A5B5-4573CF97FDB0"));
+            await _service.DeleteStar(starToDelete.Id);
+            Assert.IsNull(await _service.GetStar(starToDelete.Id));
         }
 
         [TestMethod]
         [ExpectedException(typeof(NullReferenceException))]
         public async Task Service_DeleteStarWithInvalidId_ReturnsException()
         {
-            var starToDelete = stars.SingleOrDefault(s => s.Id == new Guid("030B729D-60BF-4A26-B38C-F59F85296D35"));
-            await service.DeleteStarAsync(starToDelete.Id);
+            var starToDelete = _stars.SingleOrDefault(s => s.Id == new Guid("030B729D-60BF-4A26-B38C-F59F85296D35"));
+            await _service.DeleteStar(starToDelete.Id);
         }
     }
 }

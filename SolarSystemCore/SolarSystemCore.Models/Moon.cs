@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SolarSystemCore.Models
 {
-    public partial class Moon : BaseEntity
+    public class Moon : BaseEntity
     {
         [ForeignKey("PlanetId")]
         public virtual Planet Planet { get; set; }

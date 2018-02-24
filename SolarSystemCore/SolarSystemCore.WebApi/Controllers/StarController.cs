@@ -13,42 +13,37 @@ namespace SolarSystemCore.WebApi.Controllers
     [Route("api/Star")]
     public class StarController : Controller
     {
-        private readonly IStarService starService;
-        private readonly IAppSettings appSettings;
-        private readonly ILogger<StarController> logger;
+        private readonly IStarService _starService;
+        private readonly ILogger<StarController> _logger;
 
-        private static Helpers.CircuitBreaker.CircuitBreaker circuitBreaker;
+        private static Helpers.CircuitBreaker.CircuitBreaker _circuitBreaker;
        
         public StarController(IStarService starService, IAppSettings appSettings, ILogger<StarController> logger)
         {
-            var x = Guid.NewGuid();
-            var y = Guid.Parse("DF9AA280-C912-4E42-A5B5-4573CF97FDB0");
-
-            this.starService = starService;
-            this.appSettings = appSettings;
-            this.logger = logger;
-            if (circuitBreaker == null)
+            this._starService = starService;
+            this._logger = logger;
+            if (_circuitBreaker == null)
             {
-                circuitBreaker = new Helpers.CircuitBreaker.CircuitBreaker("star_breaker", appSettings.FailureThreshold, TimeSpan.FromSeconds(appSettings.OpenCircuitTimeout));
+                _circuitBreaker = new Helpers.CircuitBreaker.CircuitBreaker("star_breaker", appSettings.FailureThreshold, TimeSpan.FromSeconds(appSettings.OpenCircuitTimeout));
             }
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Star>> Get() => await circuitBreaker.ExecuteAsync(async () => { return await starService.GetAllStarsAsync(); }); 
+        public async Task<IEnumerable<Star>> Get() => await _circuitBreaker.ExecuteAsync(async () => await _starService.GetAllStars()); 
 
         [HttpGet("{id:guid}")]
-        public async Task<Star> Get(Guid id) => await circuitBreaker.ExecuteAsync(async () => { return await starService.GetStarAsync(id); }); 
+        public async Task<Star> Get(Guid id) => await _circuitBreaker.ExecuteAsync(async () => await _starService.GetStar(id)); 
 
         [HttpPost]
-        public async Task<Star> Post([FromBody]Star star) => await circuitBreaker.ExecuteAsync(async () => { return await starService.AddStarAsync(star); }); 
+        public async Task<Star> Post([FromBody]Star star) => await _circuitBreaker.ExecuteAsync(async () => await _starService.AddStar(star)); 
 
         [HttpPost]
-        public async Task<IEnumerable<Star>> Post([FromBody]IEnumerable<Star> stars) => await circuitBreaker.ExecuteAsync(async () => { return await starService.AddStarsAsync(stars); }); 
+        public async Task<List<Star>> Post([FromBody]List<Star> stars) => await _circuitBreaker.ExecuteAsync(async () => await _starService.AddStars(stars)); 
 
         [HttpPut("{id:guid}")]
-        public async Task<Star> Put(Guid id, [FromBody]Star star) => await circuitBreaker.ExecuteAsync(async () => { return await starService.SaveStarAsync(star); }); 
+        public async Task<Star> Put(Guid id, [FromBody]Star star) => await _circuitBreaker.ExecuteAsync(async () => await _starService.SaveStar(star)); 
 
         [HttpDelete("{id:guid}")]
-        public async Task Delete(Guid id) => await circuitBreaker.ExecuteAsync(async () => { await starService.DeleteStarAsync(id); }); 
+        public async Task Delete(Guid id) => await _circuitBreaker.ExecuteAsync(async () => { await _starService.DeleteStar(id); }); 
     }
 }

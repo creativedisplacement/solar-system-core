@@ -11,13 +11,13 @@ namespace SolarSystemCore.Repositories
 {
     public class Repository<T> : IDisposable, IRepository<T> where T : BaseEntity
     {
-        private readonly DBContext dataContext;
-        private DbSet<T> DbSet;
+        internal readonly DBContext _dataContext;
+        private readonly DbSet<T> _dbSet;
 
         public Repository(DBContext dataContext)
         {
-            this.dataContext = dataContext;
-            DbSet = dataContext.Set<T>();
+            this._dataContext = dataContext;
+            _dbSet = dataContext.Set<T>();
         }
 
         public async Task<IQueryable<T>> GetQueryableAsync()
@@ -25,24 +25,24 @@ namespace SolarSystemCore.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<List<T>> GetAllAsync()
         {
-            return await DbSet.ToListAsync();
+            return await _dbSet.ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> where)
+        public async Task<List<T>> FindAsync(Expression<Func<T, bool>> where)
         {
-            return await DbSet.Where(where).ToListAsync();
+            return await _dbSet.Where(where).ToListAsync();
         }
 
         public async Task<T> SingleOrDefaultAsync(Expression<Func<T, bool>> where)
         {
-            return await DbSet.SingleOrDefaultAsync(where);
+            return await _dbSet.SingleOrDefaultAsync(where);
         }
 
         public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> where)
         {
-            return await DbSet.FirstOrDefaultAsync(where);
+            return await _dbSet.FirstOrDefaultAsync(where);
         }
 
         public async Task<T> AddAsync(T entity)
@@ -52,19 +52,19 @@ namespace SolarSystemCore.Repositories
                 throw new ArgumentException();
             }
 
-            DbSet.Add(entity);
+            _dbSet.Add(entity);
             await SaveChangesAsync();
             return await SingleOrDefaultAsync(x => x.Id == entity.Id);
         }
 
-        public async Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities)
+        public async Task<List<T>> AddRangeAsync(List<T> entities)
         {
             if (entities.Any(e => e.Id == default(Guid)))
             {
                 throw new ArgumentException();
             }
 
-            DbSet.AddRange(entities);
+            _dbSet.AddRange(entities);
             await SaveChangesAsync();
             var savedEntities = new List<T>();
 
@@ -81,7 +81,7 @@ namespace SolarSystemCore.Repositories
             {
                 throw new ArgumentException();
             }
-            dataContext.Entry(entity).State = EntityState.Modified;
+            _dataContext.Entry(entity).State = EntityState.Modified;
             await SaveChangesAsync();
             return await SingleOrDefaultAsync(x => x.Id == entity.Id);
         }
@@ -92,7 +92,7 @@ namespace SolarSystemCore.Repositories
             {
                 throw new ArgumentException();
             }
-            dataContext.Entry(entity).State = EntityState.Deleted;
+            _dataContext.Entry(entity).State = EntityState.Deleted;
             await SaveChangesAsync();
         }
 
@@ -100,7 +100,7 @@ namespace SolarSystemCore.Repositories
         {
             try
             {
-                await dataContext.SaveChangesAsync();
+                await _dataContext.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -134,7 +134,7 @@ namespace SolarSystemCore.Repositories
             }
             if (disposing)
             {
-                dataContext.Dispose();
+                _dataContext.Dispose();
             }
             disposed = true;
         }

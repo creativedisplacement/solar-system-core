@@ -4,12 +4,12 @@ namespace SolarSystemCore.WebApi.Helpers.CircuitBreaker
 {
     public class OpenState : CircuitBreakerState
     {
-        private readonly DateTime openDateTime; //last time something went wrong, or breaker was initialized
+        private readonly DateTime _openDateTime; //last time something went wrong, or breaker was initialized
         public OpenState(CircuitBreaker circuitBreaker)
             : base(circuitBreaker)
         {
             //initialize openDateTime
-            openDateTime = DateTime.UtcNow;
+            _openDateTime = DateTime.UtcNow;
         }
 
         public override CircuitBreaker ExecutionStart()
@@ -17,20 +17,14 @@ namespace SolarSystemCore.WebApi.Helpers.CircuitBreaker
             //kickoff execution
             base.ExecutionStart();
             this.Update();
-            return base.circuitBreaker;
+            return base.CircuitBreaker;
         }
 
         public override CircuitBreakerState Update()
         {
             base.Update();
 
-            if (DateTime.UtcNow >= openDateTime + base.circuitBreaker.OpenTimeout)
-            {
-                //timeout has passed, progress state to "half-open"
-                return circuitBreaker.MoveToHalfOpenState();
-            }
-
-            return this;
+            return DateTime.UtcNow >= _openDateTime + base.CircuitBreaker.OpenTimeout ? CircuitBreaker.MoveToHalfOpenState() : this;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace SolarSystemCore.Tests.Helpers
     {
         public class StarData
         {
-            public IList<Star> GetStars()
+            public List<Star> GetStars()
             {
                 return new List<Star>
                 {
@@ -29,7 +29,7 @@ namespace SolarSystemCore.Tests.Helpers
                 };
             }
 
-            public IList<Star> GetStarsToAdd()
+            public List<Star> GetStarsToAdd()
             {
                 return new List<Star>
                 {
@@ -38,7 +38,7 @@ namespace SolarSystemCore.Tests.Helpers
                 };
             }
 
-            public IList<Star> GetStarsToAddWithDefaultGuids()
+            public List<Star> GetStarsToAddWithDefaultGuids()
             {
                 return new List<Star>
                 {
@@ -50,11 +50,31 @@ namespace SolarSystemCore.Tests.Helpers
 
         public class PlanetData
         {
-            public IList<Planet> GetPlanets()
+            public List<Planet> GetPlanets()
             {
                 return new List<Planet>
                 {
-                    new Planet { Id =Guid.Parse("DF9AA280-C912-4E42-A5B5-4573CF97FDB0"), Name = "Planet 1", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 1, StarId = Guid.NewGuid() },
+                    new Planet
+                    {
+                        Id =Guid.Parse("DF9AA280-C912-4E42-A5B5-4573CF97FDB0"),
+                        Name = "Planet 1",
+                        CreatedDate = DateTime.Now,
+                        LastUpdatedDate = DateTime.Now,
+                        Ordinal = 1,
+                        StarId = Guid.NewGuid(),
+                        Moons =
+                        {
+                            new Moon
+                            {
+                                Id = new Guid(),
+                                Name =  "Moon 1",
+                                Ordinal = 1,
+                                CreatedDate = DateTime.Now,
+                                LastUpdatedDate = DateTime.Now,
+                                PlanetId = Guid.Parse("DF9AA280-C912-4E42-A5B5-4573CF97FDB0")
+                            }
+                        }
+                    },
                     new Planet { Id =Guid.Parse("591D922F-D11C-469F-B61B-AF783D71E60A"), Name = "Planet 2", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 2, StarId = Guid.NewGuid() },
                 };
             }
@@ -71,7 +91,7 @@ namespace SolarSystemCore.Tests.Helpers
                 };
             }
 
-            public IList<Planet> GetPlanetsToAdd()
+            public List<Planet> GetPlanetsToAdd()
             {
                 return new List<Planet>
                 {
@@ -83,12 +103,44 @@ namespace SolarSystemCore.Tests.Helpers
 
         public class MoonData
         {
-            public IList<Moon> GetMoons()
+            public List<Moon> GetMoons()
             {
                 return new List<Moon>
                 {
-                    new Moon { Id = Guid.Parse("DF9AA280-C912-4E42-A5B5-4573CF97FDB0"), Name = "Moon 1", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 1, PlanetId = Guid.NewGuid() },
-                    new Moon { Id = Guid.Parse("591D922F-D11C-469F-B61B-AF783D71E60A"), Name = "Moon 2", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 2, PlanetId = Guid.NewGuid() },
+                    new Moon
+                    {
+                        Id = Guid.Parse("DF9AA280-C912-4E42-A5B5-4573CF97FDB0"),
+                        Name = "Moon 1",
+                        CreatedDate = DateTime.Now,
+                        LastUpdatedDate = DateTime.Now,
+                        Ordinal = 1,
+                        PlanetId = Guid.Parse("E8D1FEAF-866D-47EC-A44E-A0E170DC29DC"),
+                        Planet = new Planet
+                        {
+                            Id = Guid.Parse("E8D1FEAF-866D-47EC-A44E-A0E170DC29DC"),
+                            CreatedDate = DateTime.Now,
+                            LastUpdatedDate = DateTime.Now,
+                            Name = "Planet 1",
+                            StarId = Guid.NewGuid()
+                        }
+                    },
+                    new Moon
+                    {
+                        Id = Guid.Parse("591D922F-D11C-469F-B61B-AF783D71E60A"),
+                        Name = "Moon 2",
+                        CreatedDate = DateTime.Now,
+                        LastUpdatedDate = DateTime.Now,
+                        Ordinal = 2,
+                        PlanetId = Guid.Parse("576B0C15-0010-4186-B45F-9E98B9E3F56B"),
+                        Planet = new Planet
+                        {
+                            Id = Guid.Parse("576B0C15-0010-4186-B45F-9E98B9E3F56B"),
+                            CreatedDate = DateTime.Now,
+                            LastUpdatedDate = DateTime.Now,
+                            Name = "Planet 2",
+                            StarId = Guid.NewGuid()
+                        }
+                    },
                 };
             }
 
@@ -104,7 +156,7 @@ namespace SolarSystemCore.Tests.Helpers
                 };
             }
 
-            public IList<Moon> GetMoonsToAdd()
+            public List<Moon> GetMoonsToAdd()
             {
                 return new List<Moon>
                 {

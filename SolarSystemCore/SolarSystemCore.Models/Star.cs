@@ -2,7 +2,7 @@
 
 namespace SolarSystemCore.Models
 {
-    public partial class Star : BaseEntity
+    public class Star : BaseEntity
     {
         public virtual ICollection<Planet> Planets { get; set; } = new HashSet<Planet>();
     }

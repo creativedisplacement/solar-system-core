@@ -13,41 +13,39 @@ namespace SolarSystemCore.WebApi.Controllers
     [Route("api/Moon")]
     public class MoonController : Controller
     {
-        private readonly IMoonService moonService;
-        private readonly IAppSettings appSettings;
-        private readonly ILogger<MoonController> logger;
-        private static Helpers.CircuitBreaker.CircuitBreaker circuitBreaker;
+        private readonly IMoonService _moonService;
+        private readonly ILogger<MoonController> _logger;
+        private static Helpers.CircuitBreaker.CircuitBreaker _circuitBreaker;
 
         public MoonController(IMoonService moonService, IAppSettings appSettings, ILogger<MoonController> logger)
         {
-            this.moonService = moonService;
-            this.appSettings = appSettings;
-            this.logger = logger;
-            if (circuitBreaker == null)
+            this._moonService = moonService;
+            this._logger = logger;
+            if (_circuitBreaker == null)
             {
-                circuitBreaker = new Helpers.CircuitBreaker.CircuitBreaker("moon_breaker", appSettings.FailureThreshold, TimeSpan.FromSeconds(appSettings.OpenCircuitTimeout));
+                _circuitBreaker = new Helpers.CircuitBreaker.CircuitBreaker("moon_breaker", appSettings.FailureThreshold, TimeSpan.FromSeconds(appSettings.OpenCircuitTimeout));
             }
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Moon>> Get() => await circuitBreaker.ExecuteAsync(async () => { return await moonService.GetAllMoonsAsync(); }); 
+        public async Task<List<Moon>> Get() => await _circuitBreaker.ExecuteAsync(async () => await _moonService.GetAllMoons()); 
 
         [HttpGet("{id:guid}")]
-        public async Task<Moon> Get(Guid id) => await circuitBreaker.ExecuteAsync(async () => { return await moonService.GetMoonAsync(id); }); 
+        public async Task<Moon> Get(Guid id) => await _circuitBreaker.ExecuteAsync(async () => await _moonService.GetMoon(id)); 
 
         [HttpGet("planet/{id:guid}")]
-        public async Task<IEnumerable<Moon>> Get(Guid id, string star) => await circuitBreaker.ExecuteAsync(async () => { return await moonService.GetAllMoonsByPlanetIdAsync(id); }); 
+        public async Task<List<Moon>> Get(Guid id, string star) => await _circuitBreaker.ExecuteAsync(async () => await _moonService.GetAllMoonsByPlanetId(id)); 
 
         [HttpPost]
-        public async Task<Moon> Post([FromBody]Moon moon) => await circuitBreaker.ExecuteAsync(async () => { return await moonService.AddMoonAsync(moon); }); 
+        public async Task<Moon> Post([FromBody]Moon moon) => await _circuitBreaker.ExecuteAsync(async () => await _moonService.AddMoon(moon)); 
 
         [HttpPost]
-        public async Task<IEnumerable<Moon>> Post([FromBody]IEnumerable<Moon> moons) => await circuitBreaker.ExecuteAsync(async () => { return await moonService.AddMoonsAsync(moons); }); 
+        public async Task<List<Moon>> Post([FromBody]List<Moon> moons) => await _circuitBreaker.ExecuteAsync(async () => await _moonService.AddMoons(moons)); 
 
         [HttpPut("{id:guid}")]
-        public async Task<Moon> Put(Guid id, [FromBody]Moon moon) => await circuitBreaker.ExecuteAsync(async () => { return await moonService.SaveMoonAsync(moon); }); 
+        public async Task<Moon> Put(Guid id, [FromBody]Moon moon) => await _circuitBreaker.ExecuteAsync(async () => await _moonService.SaveMoon(moon)); 
 
         [HttpDelete("{id:guid}")]
-        public async Task Delete(Guid id) => await circuitBreaker.ExecuteAsync(async () => { await moonService.DeleteMoonAsync(id); }); 
+        public async Task Delete(Guid id) => await _circuitBreaker.ExecuteAsync(async () => { await _moonService.DeleteMoon(id); }); 
     }
 }
