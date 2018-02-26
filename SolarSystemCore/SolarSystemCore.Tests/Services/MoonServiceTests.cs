@@ -74,18 +74,28 @@ namespace SolarSystemCore.Tests.Services
         [TestMethod]
         public async Task Service_GetAllMoonsByPlanetId_ReturnsUnexpectedMoon()
         {
+            var moon = _moons.Skip(1).Take(1).FirstOrDefault();
             var result = await _service.GetAllMoonsByPlanetId(_moons.Skip(1).Take(1).FirstOrDefault().PlanetId);
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());
             Assert.AreNotEqual(result.FirstOrDefault().Name, "Moon 1");
+
+            var resultMoon = result.FirstOrDefault();
+            Assert.IsNotNull(resultMoon);
+            Assert.AreEqual(resultMoon.Name, moon.Name);
+            Assert.AreEqual(resultMoon.Planet.Name, moon.Planet.Name);
         }
 
         [TestMethod]
         public async Task Service_GetMoon_ReturnsExpectedResult()
         {
-            var result = await _service.GetMoon(_moons.Skip(1).Take(1).FirstOrDefault().Id);
+            var moon = _moons.Skip(1).Take(1).FirstOrDefault();
+            var result = await _service.GetMoon(moon.Id);
             Assert.IsNotNull(result);
             Assert.AreEqual("Moon 2", result.Name);
+
+            Assert.IsNotNull(result.Planet);
+            Assert.AreEqual(result.Planet.Name, moon.Planet.Name);
         }
 
         [TestMethod]

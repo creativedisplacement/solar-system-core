@@ -68,6 +68,10 @@ namespace SolarSystemCore.Tests.Services
             var result = await _service.GetStar(new Guid("591D922F-D11C-469F-B61B-AF783D71E60A"));
             Assert.IsNotNull(result);
             Assert.AreEqual("Star 2", result.Name);
+
+            Assert.IsNotNull(result.Planets);
+            Assert.AreEqual(result.Planets.Count(), _stars.FirstOrDefault().Planets.Count());
+            Assert.AreEqual(result.Planets.FirstOrDefault().Name, _stars.FirstOrDefault().Planets.FirstOrDefault().Name);
         }
 
         [TestMethod]

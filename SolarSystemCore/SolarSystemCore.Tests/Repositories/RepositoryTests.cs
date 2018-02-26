@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage;
 
 namespace SolarSystemCore.Tests.Repositories
 {
@@ -50,7 +51,7 @@ namespace SolarSystemCore.Tests.Repositories
         {
             var result = await _repository.GetAllAsync();
             Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual(_stars.Count(), result.Count());
         }
 
         [TestMethod]
@@ -66,7 +67,8 @@ namespace SolarSystemCore.Tests.Repositories
         {
             var result = await _repository.FindAsync(s => s.Id == _stars.FirstOrDefault().Id);
             Assert.IsNotNull(result);
-            Assert.AreEqual("Star 1", result.FirstOrDefault().Name);
+            Assert.AreEqual(_stars.FirstOrDefault().Name, result.FirstOrDefault().Name);
+            Assert.AreEqual(result.FirstOrDefault().Planets.Count(), _stars.FirstOrDefault().Planets.Count());
         }
 
         [TestMethod]
@@ -82,7 +84,8 @@ namespace SolarSystemCore.Tests.Repositories
         {
             var result = await _repository.SingleOrDefaultAsync(s => s.Id == _stars.FirstOrDefault().Id);
             Assert.IsNotNull(result);
-            Assert.AreEqual("Star 1", result.Name);
+            Assert.AreEqual(_stars.FirstOrDefault().Name, result.Name);
+            Assert.AreEqual(_stars.FirstOrDefault().Planets.Count(), result.Planets.Count());
         }
 
         [TestMethod]
@@ -99,6 +102,7 @@ namespace SolarSystemCore.Tests.Repositories
             var result = await _repository.FirstOrDefaultAsync(s => s.Id == _stars.FirstOrDefault().Id);
             Assert.IsNotNull(result);
             Assert.AreEqual("Star 1", result.Name);
+            Assert.AreEqual(_stars.FirstOrDefault().Planets.Count(), result.Planets.Count());
         }
 
         [TestMethod]

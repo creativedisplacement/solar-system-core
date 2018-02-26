@@ -58,7 +58,7 @@ namespace SolarSystemCore.Tests.Controllers
         {
             var result = await _controller.Get();
             Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual(_planets.Count(), result.Count());
         }
 
         [TestMethod]
@@ -72,9 +72,12 @@ namespace SolarSystemCore.Tests.Controllers
         [TestMethod]
         public async Task Controller_GetPlanet_ReturnsExpectedResult()
         {
-            var result = await _controller.Get(_planets.FirstOrDefault().Id);
+            var result = await _controller.Get(_planets.FirstOrDefault().Id); 
             Assert.IsNotNull(result);
-            Assert.AreEqual("Planet 1", result.Name);
+            Assert.AreEqual(_planets.FirstOrDefault().Name, result.Name);
+
+            Assert.AreEqual(result.Moons.Count(), _planets.FirstOrDefault().Moons.Count());
+            Assert.AreEqual(result.Moons.FirstOrDefault().Name, _planets.FirstOrDefault().Moons.FirstOrDefault().Name);
         }
 
         [TestMethod]
@@ -91,7 +94,12 @@ namespace SolarSystemCore.Tests.Controllers
             var result = await _controller.Get(_planets.Skip(1).Take(1).FirstOrDefault().StarId, "star");
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());
-            Assert.AreEqual(result.FirstOrDefault().Name, "Planet 2");
+
+            var planet = result.FirstOrDefault();
+            Assert.AreEqual(planet.Name, _planets.Skip(1).Take(1).FirstOrDefault().Name);
+            Assert.IsNotNull(planet.Moons);
+            Assert.AreEqual(planet.Moons.Count(), _planets.Skip(1).Take(1).FirstOrDefault().Moons.Count());
+            Assert.AreEqual(planet.Moons.FirstOrDefault().Name, _planets.Skip(1).Take(1).FirstOrDefault().Moons.FirstOrDefault().Name);
         }
 
         [TestMethod]

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SolarSystemCore.Tests.Controllers;
 
 namespace SolarSystemCore.Tests.Helpers
 {
@@ -13,8 +14,44 @@ namespace SolarSystemCore.Tests.Helpers
             {
                 return new List<Star>
                 {
-                    new Star { Id = Guid.Parse("DF9AA280-C912-4E42-A5B5-4573CF97FDB0"), Name = "Star 1", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 1},
-                    new Star { Id = Guid.Parse("591D922F-D11C-469F-B61B-AF783D71E60A"), Name = "Star 2", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 2},
+                    new Star
+                    {
+                        Id = Guid.Parse("DF9AA280-C912-4E42-A5B5-4573CF97FDB0"),
+                        Name = "Star 1",
+                        CreatedDate = DateTime.Now,
+                        LastUpdatedDate = DateTime.Now,
+                        Ordinal = 1,
+                        Planets = new List<Planet>
+                        {
+                          new Planet
+                          {
+                              Id = Guid.NewGuid(),
+                              Name = "Planet 1",
+                              CreatedDate = DateTime.Now,
+                              LastUpdatedDate = DateTime.Now,
+                              StarId = Guid.Parse("DF9AA280-C912-4E42-A5B5-4573CF97FDB0")
+                          }
+                        }
+                    },
+                    new Star
+                    {
+                        Id = Guid.Parse("591D922F-D11C-469F-B61B-AF783D71E60A"),
+                        Name = "Star 2",
+                        CreatedDate = DateTime.Now,
+                        LastUpdatedDate = DateTime.Now,
+                        Ordinal = 2,
+                        Planets = new List<Planet>
+                        {
+                            new Planet
+                            {
+                                Id = Guid.NewGuid(),
+                                Name = "Planet 1",
+                                CreatedDate = DateTime.Now,
+                                LastUpdatedDate = DateTime.Now,
+                                StarId = Guid.Parse("DF9AA280-C912-4E42-A5B5-4573CF97FDB0")
+                            }
+                         }
+                    }
                 };
             }
 
@@ -75,7 +112,27 @@ namespace SolarSystemCore.Tests.Helpers
                             }
                         }
                     },
-                    new Planet { Id =Guid.Parse("591D922F-D11C-469F-B61B-AF783D71E60A"), Name = "Planet 2", CreatedDate = DateTime.Now, LastUpdatedDate = DateTime.Now, Ordinal = 2, StarId = Guid.NewGuid() },
+                    new Planet
+                    {
+                        Id =Guid.Parse("591D922F-D11C-469F-B61B-AF783D71E60A"),
+                        Name = "Planet 2",
+                        CreatedDate = DateTime.Now,
+                        LastUpdatedDate = DateTime.Now,
+                        Ordinal = 2,
+                        StarId = Guid.NewGuid(),
+                        Moons =
+                        {
+                            new Moon
+                            {
+                                Id = new Guid(),
+                                Name =  "Moon 2",
+                                Ordinal = 1,
+                                CreatedDate = DateTime.Now,
+                                LastUpdatedDate = DateTime.Now,
+                                PlanetId = Guid.Parse("DF9AA280-C912-4E42-A5B5-4573CF97FDB0")
+                            }
+                        }
+                    },
                 };
             }
 

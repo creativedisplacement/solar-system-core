@@ -69,6 +69,12 @@ namespace SolarSystemCore.Tests.Services
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual(result.FirstOrDefault().Name, "Planet 1");
+
+            var planet = result.FirstOrDefault();
+            Assert.AreEqual(planet.Name, _planets.FirstOrDefault().Name);
+            Assert.IsNotNull(planet.Moons);
+            Assert.AreEqual(planet.Moons.Count(), _planets.FirstOrDefault().Moons.Count());
+            Assert.AreEqual(planet.Moons.FirstOrDefault().Name, _planets.FirstOrDefault().Moons.FirstOrDefault().Name);
         }
 
         [TestMethod]
@@ -86,6 +92,9 @@ namespace SolarSystemCore.Tests.Services
             var result = await _service.GetPlanet(_planets.Skip(1).Take(1).FirstOrDefault().Id);
             Assert.IsNotNull(result);
             Assert.AreEqual("Planet 2", result.Name);
+
+            Assert.AreEqual(result.Moons.Count(), _planets.Skip(1).Take(1).FirstOrDefault().Moons.Count());
+            Assert.AreEqual(result.Moons.FirstOrDefault().Name, _planets.Skip(1).Take(1).FirstOrDefault().Moons.FirstOrDefault().Name);
         }
 
         [TestMethod]

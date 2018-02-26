@@ -57,7 +57,7 @@ namespace SolarSystemCore.Tests.Controllers
         {
             var result = await _controller.Get();
             Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual(_stars.Count(), result.Count());
         }
 
         [TestMethod]
@@ -73,7 +73,11 @@ namespace SolarSystemCore.Tests.Controllers
         {
             var result = await _controller.Get(_stars.FirstOrDefault().Id);
             Assert.IsNotNull(result);
-            Assert.AreEqual("Star 1", result.Name);
+            Assert.AreEqual(_stars.FirstOrDefault().Name, result.Name);
+
+            Assert.IsNotNull(result.Planets);
+            Assert.AreEqual(result.Planets.Count(), _stars.FirstOrDefault().Planets.Count());
+            Assert.AreEqual(result.Planets.FirstOrDefault().Name, _stars.FirstOrDefault().Planets.FirstOrDefault().Name);
         }
 
         [TestMethod]
