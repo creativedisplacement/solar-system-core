@@ -34,7 +34,7 @@ namespace SolarSystemCore.WebApi.Controllers
         public async Task<Planet> Get(Guid id) => await _circuitBreaker.ExecuteAsync(async () => await _planetService.GetPlanet(id)); 
 
         [HttpGet("star/{id:guid}")]
-        public async Task<IEnumerable<Planet>> Get(Guid id, string star) => await  _circuitBreaker.ExecuteAsync(async () => await _planetService.GetAllPlanetsByStarId(id)); 
+        public async Task<IEnumerable<Planet>> Get(Guid id, string star) => await  _circuitBreaker.ExecuteAsync(async () => await _planetService.GetPlanetsByStarId(id)); 
 
         [HttpPost]
         public async Task<Planet> Post([FromBody]Planet planet) => await _circuitBreaker.ExecuteAsync(async () => await _planetService.AddPlanet(planet)); 

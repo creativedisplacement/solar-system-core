@@ -16,7 +16,7 @@ namespace SolarSystemCore.Services
 
         public Task<List<Moon>> GetAllMoons() => _moonRepository.GetAllMoons();
 
-        public Task<List<Moon>> GetAllMoonsByPlanetId(Guid id) => _moonRepository.GetMoonsByPlanetId(id);
+        public Task<List<Moon>> GetMoonsByPlanetId(Guid id) => _moonRepository.GetMoonsByPlanetId(id);
 
         public Task<Moon> GetMoon(Guid id) => _moonRepository.GetMoon(id);
 

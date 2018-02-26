@@ -16,7 +16,7 @@ namespace SolarSystemCore.Services
 
         public Task<List<Planet>> GetAllPlanets() => _planetRepository.GetAllPlanets();
 
-        public Task<List<Planet>> GetAllPlanetsByStarId(Guid starId) => _planetRepository.GetPlanetsByStarId(starId);
+        public Task<List<Planet>> GetPlanetsByStarId(Guid starId) => _planetRepository.GetPlanetsByStarId(starId);
 
         public Task<Planet> GetPlanet(Guid id) => _planetRepository.GetPlanet(id);
 

@@ -9,7 +9,7 @@ namespace SolarSystemCore.Services
     public interface IPlanetService
     {
         Task<List<Planet>> GetAllPlanets();
-        Task<List<Planet>> GetAllPlanetsByStarId(Guid starId);
+        Task<List<Planet>> GetPlanetsByStarId(Guid starId);
         Task<Planet> GetPlanet(Guid id);
         Task<List<Planet>> FindPlanets(Expression<Func<Planet, bool>> where);
 
