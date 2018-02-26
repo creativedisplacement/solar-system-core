@@ -1,3 +1,3 @@
-param([string]$buildEnv = 'Development')
+param([string]$buildEnv = 'Development', [string]$migrationName)
 $env:ASPNETCORE_ENVIRONMENT = $buildEnv;
-dotnet ef database update --project . --startup-project ../SolarSystemCore.WebApi
+dotnet ef database update $migrationName --project . --startup-project ../SolarSystemCore.WebApi

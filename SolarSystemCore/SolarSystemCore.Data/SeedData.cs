@@ -9,7 +9,7 @@ namespace SolarSystemCore.Data
     {
         public static void Initialize(DBContext context)
         {
-            context.Database.EnsureCreated();
+            //context.Database.EnsureCreated();
 
             if (context.Stars.Any())
             {
