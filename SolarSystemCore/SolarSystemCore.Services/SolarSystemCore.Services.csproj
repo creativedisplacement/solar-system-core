@@ -6,8 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SolarSystemCore.Core\SolarSystemCore.Core.csproj" />
-    <ProjectReference Include="..\SolarSystemCore.Models\SolarSystemCore.Models.csproj" />
-    <ProjectReference Include="..\SolarSystemCore.Repositories\SolarSystemCore.Repositories.csproj" />
   </ItemGroup>
 
 </Project>

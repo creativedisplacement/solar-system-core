@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SolarSystemCore.Models;
+using SolarSystemCore.Core.Entities;
 
-namespace SolarSystemCore.Data
+namespace SolarSystemCore.Infrastructure.Data
 {
     public class DBContext : DbContext
     {

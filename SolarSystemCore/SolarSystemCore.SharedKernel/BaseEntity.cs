@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SolarSystemCore.Models
+namespace SolarSystemCore.SharedKernel
 {
     public abstract class BaseEntity
     {

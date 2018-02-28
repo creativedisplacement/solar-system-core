@@ -1,4 +1,4 @@
-﻿namespace SolarSystemCore.Core
+﻿namespace SolarSystemCore.Core.Interfaces
 {
     public interface IAppSettings
     {

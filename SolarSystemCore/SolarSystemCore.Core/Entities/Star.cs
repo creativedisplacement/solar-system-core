@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using SolarSystemCore.SharedKernel;
+using System.Collections.Generic;
 
-namespace SolarSystemCore.Models
+namespace SolarSystemCore.Core.Entities
 {
     public class Star : BaseEntity
     {

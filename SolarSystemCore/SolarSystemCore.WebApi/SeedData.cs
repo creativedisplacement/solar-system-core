@@ -1,9 +1,10 @@
-﻿using SolarSystemCore.Models;
+﻿using SolarSystemCore.Core.Entities;
+using SolarSystemCore.Infrastructure.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SolarSystemCore.Data
+namespace SolarSystemCore.WebApi
 {
     public static class SeedData
     {

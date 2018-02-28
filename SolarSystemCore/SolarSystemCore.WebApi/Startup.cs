@@ -13,9 +13,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Serilog;
 using SolarSystemCore.Core;
-using SolarSystemCore.Data;
-using SolarSystemCore.Repositories;
-using SolarSystemCore.Services;
+using SolarSystemCore.Core.Interfaces;
+using SolarSystemCore.Core.Settings;
+using SolarSystemCore.Infrastructure.Data;
 using StructureMap;
 
 namespace SolarSystemCore.WebApi

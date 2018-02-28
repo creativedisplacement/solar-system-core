@@ -1,12 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SolarSystemCore.Models;
+using SolarSystemCore.Core.Entities;
+using SolarSystemCore.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace SolarSystemCore.Repositories
+namespace SolarSystemCore.Infrastructure.Data
 {
     public class PlanetRepository : IPlanetRepository
     {

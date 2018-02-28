@@ -1,11 +1,11 @@
-﻿using SolarSystemCore.Models;
+﻿using SolarSystemCore.SharedKernel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace SolarSystemCore.Repositories
+namespace SolarSystemCore.Core.Interfaces
 {
     public interface IRepository<T> where T : BaseEntity
     {

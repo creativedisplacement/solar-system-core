@@ -1,8 +1,7 @@
-﻿using SolarSystemCore.Models;
+﻿using SolarSystemCore.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SolarSystemCore.Tests.Controllers;
 
 namespace SolarSystemCore.Tests.Helpers
 {

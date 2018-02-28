@@ -1,13 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SolarSystemCore.Data;
-using SolarSystemCore.Models;
+using SolarSystemCore.Core.Interfaces;
+using SolarSystemCore.SharedKernel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace SolarSystemCore.Repositories
+namespace SolarSystemCore.Infrastructure.Data
 {
     public class Repository<T> : IDisposable, IRepository<T> where T : BaseEntity
     {

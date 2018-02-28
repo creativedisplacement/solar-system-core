@@ -1,4 +1,6 @@
-﻿namespace SolarSystemCore.Core
+﻿using SolarSystemCore.Core.Interfaces;
+
+namespace SolarSystemCore.Core.Settings
 {
     public class AppSettings : IAppSettings
     {

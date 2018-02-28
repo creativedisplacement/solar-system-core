@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SolarSystemCore.Core;
-using SolarSystemCore.Data;
-using SolarSystemCore.Models;
-using SolarSystemCore.Repositories;
-using SolarSystemCore.Services;
+using SolarSystemCore.Core.Entities;
+using SolarSystemCore.Core.Interfaces;
+using SolarSystemCore.Core.Services;
+using SolarSystemCore.Core.Settings;
+using SolarSystemCore.Infrastructure.Data;
 using SolarSystemCore.Tests.Helpers;
 using SolarSystemCore.WebApi.Controllers;
 using System;

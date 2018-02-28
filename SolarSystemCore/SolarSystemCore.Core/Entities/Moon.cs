@@ -1,8 +1,9 @@
-﻿using System;
+﻿using SolarSystemCore.SharedKernel;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SolarSystemCore.Models
+namespace SolarSystemCore.Core.Entities
 {
     public class Moon : BaseEntity
     {

@@ -1,14 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SolarSystemCore.Data;
-using SolarSystemCore.Models;
-using SolarSystemCore.Repositories;
+using SolarSystemCore.Core.Entities;
+using SolarSystemCore.Core.Interfaces;
+using SolarSystemCore.Infrastructure.Data;
 using SolarSystemCore.Tests.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
 
 namespace SolarSystemCore.Tests.Repositories
 {

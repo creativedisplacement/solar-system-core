@@ -15,10 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SolarSystemCore.Core\SolarSystemCore.Core.csproj" />
-    <ProjectReference Include="..\SolarSystemCore.Data\SolarSystemCore.Data.csproj" />
-    <ProjectReference Include="..\SolarSystemCore.Models\SolarSystemCore.Models.csproj" />
-    <ProjectReference Include="..\SolarSystemCore.Repositories\SolarSystemCore.Repositories.csproj" />
-    <ProjectReference Include="..\SolarSystemCore.Services\SolarSystemCore.Services.csproj" />
     <ProjectReference Include="..\SolarSystemCore.WebApi\SolarSystemCore.WebApi.csproj" />
   </ItemGroup>
 

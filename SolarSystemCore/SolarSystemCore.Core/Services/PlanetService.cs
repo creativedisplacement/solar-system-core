@@ -1,12 +1,12 @@
-﻿using SolarSystemCore.Models;
-using SolarSystemCore.Repositories;
+﻿using SolarSystemCore.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using SolarSystemCore.Core.Entities;
 
-namespace SolarSystemCore.Services
+namespace SolarSystemCore.Core.Services
 {
     public class PlanetService : IPlanetService
     {

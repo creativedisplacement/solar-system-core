@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using SolarSystemCore.Core;
-using SolarSystemCore.Models;
-using SolarSystemCore.Services;
+using SolarSystemCore.Core.Entities;
+using SolarSystemCore.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
